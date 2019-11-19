@@ -16,3 +16,7 @@ Route::get('/', function () {
 });
 
 Route::get('/also', function () { return view('welcome'); });
+
+Route::view('/welcome', 'welcome');
+
+Route::view('/agentskills', 'agentskills');

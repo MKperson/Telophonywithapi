@@ -88,7 +88,7 @@
 
                 <div class="links">
                     <a href="agentskills">Agent Skill Manger</a>
-                    <a href="phonenumbers">Phone Number Manager</a>
+                    <a href="http://tms-hvgs-ais1/telephony/">Phone Number Manager</a>
                     <!--<a href="https://laravel.com/docs">Docs</a>
                     <a href="https://laracasts.com">Laracasts</a>
                     <a href="https://laravel-news.com">News</a>

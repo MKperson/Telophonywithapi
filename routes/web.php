@@ -22,3 +22,7 @@ Route::view('/welcome', 'welcome');
 //Route::view('/agentskills', 'agentskills');
 
 Route::get('agentskills/', 'InContactController@agentskills');
+
+Route::get('ajaxRequest', 'InContactController@ajaxRequest');
+
+Route::get('popagents', 'InContactController@getAgents');

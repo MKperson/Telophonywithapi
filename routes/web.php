@@ -19,4 +19,6 @@ Route::get('/also', function () { return view('welcome'); });
 
 Route::view('/welcome', 'welcome');
 
-Route::view('/agentskills', 'agentskills');
+//Route::view('/agentskills', 'agentskills');
+
+Route::get('agentskills/', 'InContactController@agentskills');

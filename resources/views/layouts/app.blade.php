@@ -1,66 +1,75 @@
 <html>
-    <head>
-        <title>Telophony - @yield('title')</title>
-    </head>
-    <style>
-            html, body {
-                background-color: #fff;
-                color: #636b6f;
-                font-family: 'Nunito', sans-serif;
-                font-weight: 200;
-                height: 100vh;
-                margin: 0;
-            }
 
-            .full-height {
-                height: 100vh;
-            }
+<head>
+    <title>Telophony - @yield('title')</title>
+</head>
+<style>
+    html,
+    body {
+        background-color: #d3d3d3;
+        color: #636b6f;
+        font-family: 'Nunito', sans-serif;
+        font-weight: 200;
+        height: 100vh;
+        margin: 0;
+    }
 
-            .flex-center {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
+    table.center {
+        margin-left: auto;
+        margin-right: auto;
+    }
 
-            .position-ref {
-                position: relative;
-            }
+    .full-height {
+        height: 100vh;
+    }
 
-            .top-right {
-                position: absolute;
-                right: 10px;
-                top: 18px;
-            }
+    .flex-center {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+    }
 
-            .content {
-                text-align: center;
-            }
+    .position-ref {
+        position: relative;
+    }
 
-            .title {
-                font-size: 84px;
-            }
+    .top-right {
+        position: absolute;
+        right: 10px;
+        top: 18px;
+    }
 
-            .links > a {
-                color: #636b6f;
-                padding: 0 25px;
-                font-size: 13px;
-                font-weight: 600;
-                letter-spacing: .1rem;
-                text-decoration: none;
-                text-transform: uppercase;
-            }
+    .content {
+        text-align: center;
+    }
 
-            .m-b-md {
-                margin-bottom: 30px;
-            }
-        </style>
-    <body>
-        @section('sidebar')
-            This is the master sidebar.
-        @show
+    .title {
+        font-size: 84px;
+    }
 
-        <div class="container">
-            @yield('content')
-        </div>
-    </body>
+    .links>a {
+        color: #636b6f;
+        padding: 0 25px;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: .1rem;
+        text-decoration: none;
+        text-transform: uppercase;
+    }
+
+    .m-b-md {
+        margin-bottom: 30px;
+    }
+</style>
+
+<body>
+    @section('sidebar')
+
+    @show
+
+    <div>
+        @yield('content')
+    </div>
+</body>
+
 </html>

@@ -4,14 +4,15 @@
 
 @section('sidebar')
 @parent
-<H1 style="text-align: center;">Agent Skills Manager</H1>
-
+<div class="jumbotron text-center" >
+<H1>Agent Skills Manager</H1>
+</div>
 @endsection
 
 @section('content')
 <br>
-<div style="display:flex; margin:0 auto; ">
-<table style="width:20%; height:auto; border-color: black;">
+<div style="display: flex; justify-content: center;">
+<table style="">
    
     <tbody>
         <tr style="height: 19px;">

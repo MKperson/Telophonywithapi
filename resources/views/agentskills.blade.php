@@ -59,22 +59,16 @@
             /* the route pointing to the post function */
             url: 'https://www.tmsliveonline.com/DataService/DataService.svc/GetSkillAssignments',
             type: 'get',
-            headers: [{
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }, {
-                    'Access-Control-Allow-Origin':true
-                }
-
-            ],
-
-            // data: {
-            //     _token: CSRF_TOKEN,
-
-            // },
             dataType: 'JSON',
             /* remind that 'data' is the response of the AjaxController */
             success: function(data) {
-                console.log(data);
+                console.log(data['GetSkillAssignmentsResult']['Assignments']['Agents']);
+                var agents = data['GetSkillAssignmentsResult']['Assignments']['Agents'];
+                $('#agents').empty();
+                
+                for(var i = 0; i < agents.length; i++){
+                    $('#agents').append('<option value="' + agents[i]['AgentID'] + '">' + agents[i]['AgentName'] + '</option>')
+                } 
             }
         });
     }

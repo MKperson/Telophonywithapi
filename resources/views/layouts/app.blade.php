@@ -70,14 +70,37 @@
     .m-b-md {
         margin-bottom: 30px;
     }
+    .loader {
+		border: 16px solid #f3f3f3;
+		/* Light grey */
+		border-top: 16px solid blue;
+		border-right: 16px solid green;
+		border-bottom: 16px solid red;
+		border-radius: 50%;
+		width: 120px;
+		height: 120px;
+		position: absolute;
+		left: 50%;
+		animation: spin 2s linear infinite;
+	}
+
+	@keyframes spin {
+		0% {
+			transform: rotate(0deg);
+		}
+
+		100% {
+			transform: rotate(360deg);
+		}
+	}
 </style>
 
 <body>
     @section('sidebar')
-
+    <div id="loader" class="loader" style="display: none;">Please Wait</div>
     @show
 
-    <div>
+    <div id="main">
         @yield('content')
     </div>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

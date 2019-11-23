@@ -10,15 +10,16 @@
 @endsection
 
 @section('content')
+
 <div style="display: flex; justify-content: center;">
-    <table>
+    <table class="table-bordered" style="width: 25%;">
 
         <tbody>
             <tr style="height: 19px;">
-                <td style="width: 100%; height: 19px;">Please Choose an employee</td>
+                <td class="col-form-label" style="width: 100%; height: 19px;">Please Choose an employee</td>
             </tr>
             <tr style="height: 19px;">
-                <td style="width: 100%; height: 19px;"><select onchange="load()" id="agents" style="width: 100%;">
+                <td style="width: 100%; height: 19px;"><select class="selectpicker" data-show-subtext="true" data-live-search="true" onchange="load()" id="agents" >
                         <option>Please Wait</option>
                     </select></td>
             </tr>
@@ -28,20 +29,38 @@
             </tr>
             <tr>
                 <td><select id="campaigns" style="width: 100%;" hidden>
-                        <option></option>
+                        <option>NOT IMPLIMENTED YET</option>
                     </select></td>
             </tr>
         </tbody>
 
     </table>
-    <select style="width: 10%;" class="form-control">
-<option>1</output>
-<option>2</output>
-<option>3</output>
-<option>4</output>
-<option>5</output>
-</select>
-    <!-- <textarea id="skillList" readonly rows="25" cols="25" style="resize: none;"></textarea> -->
+    <table id="recTable" style="width: 25%;background-color: white;" class="table display table-striped">
+        <thead>
+            <tr>
+                <th>Skill Name</th>
+                <th>Prof.</th>
+            </tr>
+        </thead>
+        <tbody id=skillRec>
+            <!-- Do your loop for <tr> records here -->
+            <!--<tr>
+                <td>
+                    Skill Name Goes Here
+                </td>
+                <td>
+                    <select id="yourIDtoTargetWithValueLater" class="form-control" readonly>
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </td>
+            </tr>-->
+        </tbody>
+    </table>
 </div>
 
 
@@ -88,6 +107,7 @@
                 for (var i = 0; i < sagents.length; i++) {
                     $('#agents').append('<option value=' + '\'' + sagents[i]['AgentID'] + '\'' + '>' + sagents[i]['AgentName'] + '</option>')
                 };
+               
 
             }
         });
@@ -185,10 +205,24 @@
                     id: val,
                 },
                 method: "post",
+                dataType: 'json',
                 success: function(data) {
                     console.log(data);
-                    $('#skillList').empty();
-                    $('#skillList').append(data);
+
+                    //$('#recTable').prop('hidden', false);
+
+                    $('#skillRec').empty();
+
+                    for (var i = 0; i < data['skills'].length; i++) {
+
+
+                        var prof = data['skills'][i]['ProficiencyValue']
+
+                        $('#skillRec').append(' <tr><td>' + data['skills'][i]['SkillName'] + '</td> <td><select id = "selected_prof' + i + '" class="form-control"><option value="1"> 1 </option><option value="2">2</option> <option value="3"> 3 </option><option value="4"> 4 </option> <option value="5"> 5 </option></select></td> </tr>');
+
+                        //$('#selected_prof'+i+' option[value=' + prof +']').attr('selected','selected');
+                        $('#selected_prof' + i).val(prof);
+                    }
 
                     $('#radiobutt').prop('hidden', false);
 
@@ -197,6 +231,7 @@
             });
         } else {
             $('#radiobutt').prop('hidden', true);
+            $('#skillRec').empty();
         }
     }
 </script>

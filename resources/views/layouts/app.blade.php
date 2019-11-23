@@ -5,10 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
-    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
+
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
 
 
@@ -70,43 +71,44 @@
     .m-b-md {
         margin-bottom: 30px;
     }
+
     .loader {
-		border: 16px solid #f3f3f3;
-		/* Light grey */
-		border-top: 16px solid blue;
-		border-right: 16px solid green;
-		border-bottom: 16px solid red;
-		border-radius: 50%;
-		width: 120px;
-		height: 120px;
-		position: absolute;
-		left: 50%;
-		animation: spin 2s linear infinite;
-	}
+        border: 16px solid #f3f3f3;
+        /* Light grey */
+        border-top: 16px solid blue;
+        border-right: 16px solid green;
+        border-bottom: 16px solid red;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        position: absolute;
+        left: 50%;
+        animation: spin 2s linear infinite;
+    }
 
-	@keyframes spin {
-		0% {
-			transform: rotate(0deg);
-		}
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
 
-		100% {
-			transform: rotate(360deg);
-		}
-	}
+        100% {
+            transform: rotate(360deg);
+        }
+    }
 </style>
 
 <body>
     @section('sidebar')
-    <div id="loader" class="loader" style="display: none;">Please Wait</div>
     @show
-
+    <div id="loader" class="loader" style="display: none;">Please Wait</div>
     <div id="main">
         @yield('content')
     </div>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+
 </body>
 @section('footer')
 

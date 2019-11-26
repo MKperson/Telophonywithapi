@@ -153,6 +153,7 @@ function load() {
                     //$('#selected_prof'+i+' option[value=' + prof +']').attr('selected','selected');
                     $('#' + data['skills'][i]['SkillID']).val(prof);
                 }
+                $('#skillRec').append("<td><button onclick='alert(\"Not Implimented please try again later\")'>Add Skill</button></td>");
 
                 $('#radiobutt').prop('hidden', false);
 
@@ -169,8 +170,7 @@ function modprof(id) {
     //console.log(id);
     //alert($('#agents').val() + ":" + id + ":" + $('#' + id).val());
 
-
-    var data = {
+    var arr = {
         "AgentID": $('#agents').val(),
         "Skills": [
             {
@@ -178,7 +178,29 @@ function modprof(id) {
             }
         ],
         "Proficiency": $('#' + id).val()
-    }
-    alert(JSON.stringify(data));
+    };
+    
 
+    //alert(JSON.stringify(arr));
+
+    $.ajax({
+        
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        url: 'setAgentsProf',
+        data: {
+            arr,
+        },
+        method: "post",
+        dataType:"json",
+        success: function (data) {
+            console.log(data);
+            console.log(JSON.stringify(data));
+        },
+        error: function (message) {
+            
+            console.log(message);
+        },
+    })
 }

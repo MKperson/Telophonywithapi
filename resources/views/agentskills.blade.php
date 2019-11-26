@@ -54,9 +54,6 @@
                 </td>
             </tr>-->
         </tbody>
-        <tr>
-            <td><button>Add Skill</button></td>
-        </tr>
     </table>
 </div>
 @endsection

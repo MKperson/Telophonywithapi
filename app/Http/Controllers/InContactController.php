@@ -48,35 +48,63 @@ class InContactController extends Controller
         //var_dump(json_encode($agents));
 
         //var_dump($_POST);
-        
+
         //$value = $request->session()->get('XSRF-TOKEN');
         //$request->session()->flush();
         //$request->session()->put('XSRF-TOKEN',$value);
         foreach ($agents as $agent) {
-            //var_dump($agent);
+            // var_dump($agent);
 
-            // DB::table('agents')
-            //     ->updateOrInsert(
+            DB::table('agents')
+                ->updateOrInsert(
 
-            //         ['agentid' => $agent->AgentID],
-            //         ['agentname' =>  $agent->AgentName , 'skills' =>   serialize($agent->Skills) ],
+                    ['agentid' => $agent->AgentID],
+                    ['agentname' =>  $agent->AgentName , 'skills' =>   serialize($agent->Skills) ],
 
-            //     );
+                );
         }
     }
     public function setAgents()
+    { }
+    public function setAgentsProf(Request $request)
     {
-        var_dump(sizeof($_POST));
-        return $_POST;
+
+        //var_dump($_POST);
+
+        // Create a cURL handle
+        $ch = curl_init('https://www.tmsliveonline.com/DataService/DataService.svc/ModifyAgentSkills');
+
+        $data_string = json_encode($_POST['arr']);
+
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);                                                                  
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                                                                      
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
+            'Content-Type: application/json',                                                                                
+            )                                                                       
+        );                                                                                                                   
+                                                                                                                             
+        $result = curl_exec($ch);
+
+        // Execute the handle
+        $output = curl_exec($ch);
+
+
+        $this->response = json_decode($output);
+        var_dump($data_string);
+        var_dump($this->response);
+
+        return $this->response;
+        
     }
 
     public function getAgent(Request $request)
 
     {
-        $query = DB::table('agents')->where('agentid',$_POST['id'])->get();
+        $query = DB::table('agents')->where('agentid', $_POST['id'])->get();
         $agent = $query[0];
         $temp = unserialize($agent->skills);
-        $agent->skills =$temp;
+        $agent->skills = $temp;
         //var_dump(json_encode($agent));
         return json_encode($agent);
     }

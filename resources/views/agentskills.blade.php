@@ -15,7 +15,7 @@
             </tr>
             <tr style="height: 19px;">
                 <td style="width: 100%; height: 19px;"><select class="form-control" data-live-search="true" onchange="load()" id="agents">
-                        <option>Please Wait</option>
+                        <option> {{ $message }}</option>
                     </select></td>
             </tr>
             <tr>
@@ -56,6 +56,7 @@
         </tbody>
     </table>
 </div>
+
 @endsection
 @section('footer')
 <script type="text/javascript" src="..\resources\js\agentskill.js"></script>

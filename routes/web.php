@@ -15,15 +15,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/also', function () { return view('welcome'); });
-
-Route::view('/welcome', 'welcome');
+// Route::view('/welcome', 'welcome');
 
 //Route::view('/agentskills', 'agentskills');
 
-Route::get('agentskills/', 'InContactController@agentskills');
+Route::get('agentskills', 'InContactController@agentskills');
 
-Route::get('ajaxRequest', 'InContactController@ajaxRequest');
+// Route::get('ajaxRequest', 'InContactController@ajaxRequest');
 
 Route::post('getAgent', 'InContactController@getAgent');
 
@@ -32,3 +30,15 @@ Route::post('getAgent', 'InContactController@getAgent');
 Route::get('updateDB', 'InContactController@updateDB');
 
 Route::post('setAgentsProf', 'InContactController@setAgentsProf');
+
+Route::get('addskill', 'InContactController@addSkill');
+
+Route::view('newskill','newskill');
+
+
+
+
+// Route::post('testpost', function () {
+//     return view('testpost');
+// });
+// Route::view('/test', 'test');

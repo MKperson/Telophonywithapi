@@ -10,27 +10,26 @@ function toggle() {
 function popagents() {
     $('#loader').prop('style', 'display:block');
     //$('#main').prop('style', 'display:none');
-
-
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     var sagents;
     $.ajax({
-        /* the route pointing to the post function */
-        url: 'https://www.tmsliveonline.com/DataService/DataService.svc/GetSkillAssignments',
+        headers: {
+            'X-CSRF-TOKEN': CSRF_TOKEN,
+        },
+        url: 'updateDB',
         type: 'get',
-        dataType: 'JSON',
-        /* remind that 'data' is the response of the AjaxController */
+
         success: function (data) {
-            //console.log(data['GetSkillAssignmentsResult']['Assignments']['Agents']);
-            var agents = data['GetSkillAssignmentsResult']['Assignments']['Agents'];
+
+            var agents = JSON.parse(data);
             $('#agents').empty();
 
             sagents = sorthelp(agents);
-            var temp = {};
-            for (var i = 0; i < sagents.length; i++) {
+            // var temp = {};
+            // for (var i = 0; i < sagents.length; i++) {
 
-                temp[i] = sagents[i]
-            };
+            //     temp[i] = sagents[i]
+            // };
 
             $('#agents').append('<option value=\'\'></option>');
 
@@ -39,26 +38,15 @@ function popagents() {
             };
             $('#agents').selectpicker();
 
-        }
-    });
-    $.ajax({
-        headers: {
-            'X-CSRF-TOKEN': CSRF_TOKEN,
-        },
-        url: 'updateDB',
-        type: 'get',
-        success: function (data) {
             $('#loader').prop('style', 'display:none');
             //$('#main').prop('style', 'display:block');
+        },
+        error: function (message) {
+            console.log(message);
         }
-
     });
-
 }
-
-
 function sorthelp(ray) {
-
 
     if (typeof helper == 'undefined') {
         var helper = {};
@@ -97,8 +85,6 @@ function sorthelp(ray) {
                 var x = is_numeric ? +a[columns[index]] : a[columns[index]].toLowerCase();
                 var y = is_numeric ? +b[columns[index]] : b[columns[index]].toLowerCase();
 
-
-
                 if (x < y) {
                     return direction == 0 ? -1 : 1;
                 }
@@ -122,6 +108,9 @@ function sorthelp(ray) {
 }
 
 function load() {
+
+
+    //$('#loader').prop('style', 'display:block');
     var val = $('#agents').val();
     if (val != "") {
 
@@ -137,26 +126,35 @@ function load() {
             method: "post",
             dataType: 'json',
             success: function (data) {
-                console.log(data);
+
+                //console.log(data);
 
                 //$('#recTable').prop('hidden', false);
 
                 $('#skillRec').empty();
 
-                for (var i = 0; i < data['skills'].length; i++) {
+                for (var i = 0; i < data['Skills'].length; i++) {
 
 
-                    var prof = data['skills'][i]['ProficiencyValue']
+                    var prof = data['Skills'][i]['ProficiencyValue']
 
-                    $('#skillRec').append('<tr><td>' + data['skills'][i]['SkillName'] + '</td> <td><select id = "' + data['skills'][i]['SkillID'] + '" class="form-control" onchange="modprof(id)";  ><option value="1"> 1 </option><option value="2"> 2 </option> <option value="3"> 3 </option><option value="4"> 4 </option> <option value="5"> 5 </option></select></td> </tr>');
+                    $('#skillRec').append('<tr><td>' + data['Skills'][i]['SkillName'] + '</td> <td><select id = "' + data['Skills'][i]['SkillID'] + '" class="form-control" onchange="modprof(id)";  ><option value="1"> 1 </option><option value="2"> 2 </option> <option value="3"> 3 </option><option value="4"> 4 </option> <option value="5"> 5 </option></select></td> </tr>');
 
                     //$('#selected_prof'+i+' option[value=' + prof +']').attr('selected','selected');
-                    $('#' + data['skills'][i]['SkillID']).val(prof);
+                    $('#' + data['Skills'][i]['SkillID']).val(prof);
                 }
-                $('#skillRec').append("<td><button onclick='alert(\"Not Implimented please try again later\")'>Add Skill</button></td>");
+                $('#skillRec').append("<td><button onclick='addSkill()'>Add Skill</button></td>");
 
                 $('#radiobutt').prop('hidden', false);
 
+                $('#sessiontest').empty();
+                //$('#sessiontest').append("<div id='sessiontest' class=\"row\"><?php if (!empty(session('agents'))) {echo session('agents');} ?></div>");
+                $('#loader').prop('style', 'display:none');
+
+            },
+            error: function (message) {
+                debugger;
+                console.log(message);
             },
 
         });
@@ -167,8 +165,7 @@ function load() {
 }
 
 function modprof(id) {
-    //console.log(id);
-    //alert($('#agents').val() + ":" + id + ":" + $('#' + id).val());
+    $('#loader').prop('style', 'display:block');
 
     var arr = {
         "AgentID": $('#agents').val(),
@@ -179,28 +176,71 @@ function modprof(id) {
         ],
         "Proficiency": $('#' + id).val()
     };
-    
 
     //alert(JSON.stringify(arr));
 
     $.ajax({
-        
+
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         url: 'setAgentsProf',
         data: {
-            arr,
+            payload: arr,
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
         },
         method: "post",
-        dataType:"json",
+        dataType: "json",
         success: function (data) {
             console.log(data);
             console.log(JSON.stringify(data));
+            $('#loader').prop('style', 'display:none');
         },
         error: function (message) {
-            
+
             console.log(message);
+            $('#loader').prop('style', 'display:none');
         },
     })
+}
+function addSkill() {
+    $('#loader').prop('style', 'display:block');
+
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        url: 'addskill',
+        method: "get",
+        dataType: "json",
+        success: function (data) {
+            // debugger;
+            var sskills = sorthelp(data);
+
+            let skillWindow = window.open("./newskill", "SkillWindow", "width=500,height=250");
+
+            skillWindow.focus();
+
+            skillWindow.onload = function(){
+                //let html = `<div style="font-size:30px">Welcome!</div>`;
+                //skillWindow.document.body.insertAdjacentHTML("afterbegin",html);
+                skillWindow.$('#skillselect').empty()
+                // debugger;
+                for (var i = 0; i < sskills.length; i++){
+                    skillWindow.$('#skillselect').append("<option value=\""+sskills[i]['SkillID']+"\">"+ sskills[i]['SkillName'] + "</option>")
+                } 
+            }
+            console.log(data);
+            // console.log(JSON.stringify(data));
+            $('#loader').prop('style', 'display:none');
+        },
+        error: function (message) {
+            console.log(message);
+            $('#loader').prop('style', 'display:none');
+        },
+
+    })
+
+
+
 }

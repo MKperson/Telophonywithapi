@@ -1,3 +1,7 @@
+<?php 
+//session_start();
+//$_SESSION['result'];
+?>
 <html>
 <head>
     <title>Telophony - @yield('title')</title>

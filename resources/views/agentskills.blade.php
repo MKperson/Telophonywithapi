@@ -14,12 +14,14 @@
                 <td class="col-form-label" style="width: 100%; height: 19px;">Please Choose an employee</td>
             </tr>
             <tr style="height: 19px;">
-                <td style="width: 100%; height: 19px;"><select class="form-control" data-live-search="true" onchange="load()" id="agents">
+                <td style="width: 100%; height: 19px;"><select class="form-control" data-live-search="true"
+                        onchange="load()" id="agents">
                         <option> {{ $message }}</option>
                     </select></td>
             </tr>
             <tr>
-                <td style="width: 100%; text-align: center; padding: 10;" id="radiobutt" hidden><input name="select" id="select-1" onchange="toggle()" type="radio" value="1" checked />All Skills
+                <td style="width: 100%; text-align: center; padding: 10;" id="radiobutt" hidden><input name="select"
+                        id="select-1" onchange="toggle()" type="radio" value="1" checked />All Skills
                     <input name="select" type="radio" id="select-2" value="2" onchange="toggle()" />Campaign </td>
             </tr>
             <tr>
@@ -34,6 +36,7 @@
             <tr>
                 <th>Skill Name</th>
                 <th>Prof.</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody id=skillRec>
@@ -51,6 +54,9 @@
                         <option value="4">4</option>
                         <option value="5">5</option>
                     </select>
+                </td>
+                <td>
+                    <a class="btn btn-sm btn-danger" data-id="youridgoeshere">Delete Icon</a>
                 </td>
             </tr>-->
         </tbody>

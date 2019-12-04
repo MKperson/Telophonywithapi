@@ -23,7 +23,7 @@ Route::get('agentskills', 'InContactController@agentskills');
 
 // Route::get('ajaxRequest', 'InContactController@ajaxRequest');
 
-Route::post('getAgent', 'InContactController@getAgent');
+Route::post('getAgentSkills', 'InContactController@getAgentSkills');
 
 //Route::post('setAgents', 'InContactController@setAgents');
 
@@ -31,12 +31,11 @@ Route::get('updateDB', 'InContactController@updateDB');
 
 Route::post('setAgentsProf', 'InContactController@setAgentsProf');
 
-Route::get('addskill', 'InContactController@addSkill');
+Route::match(['get', 'post'],'addskill', 'InContactController@addSkill');
+
+Route::match(['get', 'post'],'delskill', 'InContactController@delSkill');
 
 Route::view('newskill','newskill');
-
-
-
 
 // Route::post('testpost', function () {
 //     return view('testpost');

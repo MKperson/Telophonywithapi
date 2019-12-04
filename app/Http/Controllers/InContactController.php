@@ -149,8 +149,9 @@ class InContactController extends Controller
             foreach ($request['sarr'] as $skillId) {
                 array_push($arr, ['SkillID' => $skillId]);
             }
+            
             $payload = array(
-                'AgentID' => session('currentagentid'), 'Skills' => $arr, 'Proficiency' => 3
+                'AgentID' => session('currentagentid'), 'Skills' => $arr, 'Proficiency' => $request['prof']
             );
             $url = 'https://www.tmsliveonline.com/DataService/DataService.svc/AddAgentSkills';
             $responce = $this->curlcalls($url, "POST", $payload);

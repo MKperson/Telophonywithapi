@@ -61,6 +61,8 @@ function load() {
             dataType: 'json',
             success: function (data) {
 
+                data = sorthelp(data,['SkillName'],['ASC']);
+
                 //console.log(data);
 
                 //$('#recTable').prop('hidden', false);
@@ -168,9 +170,10 @@ function addSkill() {
             dataType: "json",
             success: function (data) {
                 //debugger;
+                debugger;
                 var sskills = sorthelp(data, ['skillName'], ['ASC']);
 
-                let skillWindow = PopupCenter("./newskill", "SkillWindow", 950, 400);
+                let skillWindow = PopupCenter("./newskill", "SkillWindow", 500, 800);
 
                 skillWindow.focus();
 
@@ -199,6 +202,8 @@ function addSkill() {
         })
     } else {
         sarr = $('#skillselect').val();
+        prof = $('#profselect').val();
+        if(sarr.length>0){
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -206,7 +211,7 @@ function addSkill() {
             url: 'addskill',
             method: "post",
             data: {
-                sarr,
+                sarr,prof,
             },
             // dataType: "json",
             success: function (data) {
@@ -221,7 +226,11 @@ function addSkill() {
 
             },
 
-        });
+        });}
+        else{
+            alert('Please Select at least 1 Skill');
+            $('#loader').prop('style', 'display:none');
+        }
 
     }
 }
@@ -299,6 +308,7 @@ function sorthelp(ray, columns, ascdesc) {
 
 }
 function btndelete(id) {
+    $('#loader').prop('style', 'display:block');
 
     aid = $("#agents").val();
     $.ajax({
@@ -317,6 +327,7 @@ function btndelete(id) {
         },
         error:function(message){
             console.log(message);
+            $('#loader').prop('style', 'display:none');
         },
 
     });

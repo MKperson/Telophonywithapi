@@ -1,10 +1,18 @@
 @extends('layouts.app')
 @section('title', 'Agent Skills')
+<style>
+.navbar {
+
+display: none !important;
+
+}
+</style>
 @section('sidebar')
 @parent
 @endsection
 @section('content')
-<div class="row justify-content-center align-items-center">
+<div class="row h-25 justify-content-center align-items-center">
+    <br>
     <table>
         <tbody>
             <tr>

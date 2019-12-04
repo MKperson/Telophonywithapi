@@ -170,7 +170,6 @@ function addSkill() {
             dataType: "json",
             success: function (data) {
                 //debugger;
-                debugger;
                 var sskills = sorthelp(data, ['skillName'], ['ASC']);
 
                 let skillWindow = PopupCenter("./newskill", "SkillWindow", 500, 800);

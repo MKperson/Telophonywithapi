@@ -24,7 +24,7 @@ class InContactController extends Controller
     public function agentskills()
     {
         $message = 'Please Wait';
-        $rnum = rand(0, 8);
+        $rnum = rand(0, 9);
         //$rnum = 6;
         switch ($rnum) {
             case 0:
@@ -41,19 +41,22 @@ class InContactController extends Controller
                 break;
             case 4:
                 $message = 'Waiting on Stephen\'s API';
-            break;
+                break;
             case 5:
                 $message = 'All of IT is busy Please Wait';
-            break;
+                break;
             case 6:
                 $message = 'To load or not to load that is the question';
-            break;
+                break;
             case 7:
                 $message = 'New guy has been notified of your long Wait';
-            break;
-            case 8: 
+                break;
+            case 8:
                 $message = 'I lost the GAME';
-            break;
+                break;
+            case 9:
+                $message = 'Eric sees all Please Wait';
+                break;
             default:
                 break;
         }
@@ -61,28 +64,65 @@ class InContactController extends Controller
         return view('agentskills', ['message' => $message]);
     }
 
+    private function curlcalls($url, $method, $payload = null)
+    {
+        if ($method == "get" or $method == "GET") {
+            $ch = curl_init();
+            //this is a get
+            curl_setopt($ch, CURLOPT_URL, $url);
+            // SSL important
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            $result = curl_exec($ch);
+            $err = curl_error($ch);
+            if ($err) {
+                curl_close($ch);
+                return "- cURL Error #:" . $err;
+            } else {
+                curl_close($ch);
+                return $result;
+            }
+        } elseif ($method == "POST" or $method == "post") {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            if (!$payload == null) {
+                $data_string = json_encode($payload);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+                curl_setopt($ch, CURLOPT_HEADER, true);
+                curl_setopt(
+                    $ch,
+                    CURLOPT_HTTPHEADER,
+                    array(
+                        'Content-Type:application/json',
+                        'Content-Length: ' . strlen($data_string)
+                    )
+                );
+            }
+            $result = curl_exec($ch);
+            $err = curl_error($ch);
+            if ($err) {
+                curl_close($ch);
+                return "- cURL Error #:" . $err;
+            } else {
+                curl_close($ch);
+                return $result;
+            }
+        } else {
+            return "ERROR";
+        }
+    }
     public function updateDB(Request $request)
     {
-        $ch = curl_init();
-        //this is a get
-        curl_setopt($ch, CURLOPT_URL, "https://www.tmsliveonline.com/DataService/DataService.svc/GetSkillAssignments");
-        // SSL important
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        //$url = "https://www.tmsliveonline.com/DataService/DataService.svc/GetSkillAssignments";
+        $skillurl = 'https://www.tmsliveonline.com/DataService/DataService.svc/GetICSkills';
+        $agenturl = 'https://www.tmsliveonline.com/DataService/DataService.svc/GetICAgents';
 
-        $output = curl_exec($ch);
-        curl_close($ch);
+        $agents = json_decode($this->curlcalls($agenturl, "get"))->GetICAgentsResult->agents;
 
-        $this->response = json_decode($output);
+        $skills = json_decode($this->curlcalls($skillurl, "get"))->GetICSkillsResult->skills;
 
-        $agents = $this->response->GetSkillAssignmentsResult->Assignments->Agents;
-
-        foreach ($agents as $agent) {
-            
-            session()->forget($agent->AgentID . 'A');
-            session()->put($agent->AgentID . 'A', $agent);
-        }
-        $skills = $this->response->GetSkillAssignmentsResult->Assignments->Skills;
         session()->forget('skills');
         session()->put('skills', $skills);
         //return json_encode(session('agents'));
@@ -92,70 +132,51 @@ class InContactController extends Controller
     {
 
         $url = 'https://www.tmsliveonline.com/DataService/DataService.svc/ModifyAgentSkills';
-        $XCSRFTOKEN = $_POST['X-CSRF-TOKEN'];
         $data = $_POST['payload'];
+        $responce = $this->curlcalls($url, "POST", $data);
+    }
 
-        $data_string = json_encode($data);
-
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt(
-            $ch,
-            CURLOPT_HTTPHEADER,
-            array(
-                'Content-Type:application/json',
-                'Content-Length: ' . strlen($data_string)
-            )
-        );
-
-        $result = curl_exec($ch);
-        $err = curl_error($ch);
-
-        //var_dump($data_string);
-        if ($err) {
-            echo "- cURL Error #:" . $err;
-        } else {
-            $agent = session($_POST['payload']['AgentID'] . 'A');
-            // $agents = session('agents');
-
-            // foreach ($agents as $agent) {
-            //     if ($agent->AgentID == $_POST['payload']['AgentID']) {
-            foreach ($agent->Skills as $skills) {
-                if ($skills->SkillID == $_POST['payload']['Skills'][0]["SkillID"]) {
-                    $skills->ProficiencyValue = $_POST['payload']['Proficiency'];
-                    break;
-                }
+    public function getAgentSkills(Request $request)
+    {
+        $url = 'https://www.tmsliveonline.com/DataService/DataService.svc/GetAgentSkills?AgentID=' . $request['id'];
+        $skills = json_decode($this->curlcalls($url, "get"))->GetAgentSkillsResult->Skills;
+        return json_encode($skills);
+    }
+    public function addSkill(Request $request)
+    {
+        if ($request->isMethod('post')) {
+            $arr = [];
+            foreach ($request['sarr'] as $skillId) {
+                array_push($arr, ['SkillID' => $skillId]);
             }
-            //         break;
-            //     }
-            // }
-            session()->put($agent->AgentID . 'A', $agent);
+            $payload = array(
+                'AgentID' => session('currentagentid'), 'Skills' => $arr, 'Proficiency' => 3
+            );
+            $url = 'https://www.tmsliveonline.com/DataService/DataService.svc/AddAgentSkills';
+            $responce = $this->curlcalls($url, "POST", $payload);
+            if (!$responce == true) {
+                return "ERROR";
+            }
+        } else {
+            session()->forget('currentagentid');
+            session(['currentagentid' => $request['id']]);
+            return json_encode(session('skills'));
         }
-        curl_close($ch);
     }
-
-    public function getAgent(Request $request)
-
+    function delSkill(Request $request)
     {
-        $agent = session($_POST['id'] . 'A');
-        return json_encode($agent);
+        if ($request->isMethod("post")) {
+            $skillid = $request['sid'];
+            $agentid = $request['agentid'];
 
-        // $agents = session('agents');
-        // foreach ($agents as $agent) {
+            $url = 'https://www.tmsliveonline.com/DataService/DataService.svc/RemoveAgentSkills';
+            $payload = array('AgentID' => $agentid, 'Skills' => array(['SkillID' => $skillid]));
+            // return json_encode($payload);
 
-        //     if ($agent->AgentID == $_POST['id']){
-        //         //var_dump($agent);
-        //         return json_encode($agent);
-        //     }
-
-        // }
-
-    }
-    public function addSkill()
-    {
-        return json_encode(session('skills'));
+            $responce = json_encode($this->curlcalls($url, "post", $payload));
+            return $responce;
+        } else {
+            return "false";
+        }
     }
 }

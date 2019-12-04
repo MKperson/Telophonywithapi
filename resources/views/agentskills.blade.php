@@ -34,6 +34,7 @@
             <tr>
                 <th>Skill Name</th>
                 <th>Prof.</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody id=skillRec>
@@ -51,6 +52,9 @@
                         <option value="4">4</option>
                         <option value="5">5</option>
                     </select>
+                </td>
+                <td>
+                    <a class="btn btn-sm btn-danger" data-id="youridgoeshere">Delete Icon</a>
                 </td>
             </tr>-->
         </tbody>

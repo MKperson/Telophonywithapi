@@ -10,8 +10,9 @@
     <option>skill2</option>
     <option>skill3</option>
 </select>
-<button onclick="window.close()">Submit</button>
+<button onclick="addSkill()">Submit</button>
 @endsection
 @section('footer')
+<script type="text/javascript" src="..\resources\js\agentskill.js"></script>
 <!-- <iframe hidden onload="$('#skillselect').selectpicker()"></iframe> -->
 @endsection

@@ -145,37 +145,167 @@ class InContactController extends Controller
     public function addSkill(Request $request)
     {
         if ($request->isMethod('post')) {
-            $arr = [];
-            foreach ($request['sarr'] as $skillId) {
-                array_push($arr, ['SkillID' => $skillId]);
-            }
-            
-            $payload = array(
-                'AgentID' => session('currentagentid'), 'Skills' => $arr, 'Proficiency' => $request['prof']
-            );
+            $delurl = 'https://www.tmsliveonline.com/DataService/DataService.svc/RemoveAgentSkills';
+            $ids = session('currentagentid');
             $url = 'https://www.tmsliveonline.com/DataService/DataService.svc/AddAgentSkills';
-            $responce = $this->curlcalls($url, "POST", $payload);
-            if (!$responce == true) {
-                return "ERROR";
+            $arr = [];
+            $skillidprof = session('skillidprof');
+            session()->forget('skillidprof');
+            if (is_array($skillidprof) && count($skillidprof) > 0) {
+                $profarr1 = [];
+                $profarr2 = [];
+                $profarr3 = [];
+                $profarr4 = [];
+                $profarr5 = [];
+
+                //$skillidprof should look like (#####<tab>#,#####<tab>#,......) tab is writen for readability only # = (a number from 0-9)
+                foreach ($skillidprof as $profsplit) {
+                    $resultarr = explode('--', $profsplit);
+                    var_dump(json_encode($resultarr));
+                    switch ($resultarr[1]) {
+                        case '1':
+                            array_push($profarr1, ['SkillID' => $resultarr[0]]);
+                            break;
+                        case '2':
+                            array_push($profarr2, ['SkillID' => $resultarr[0]]);
+                            break;
+                        case '3':
+                            array_push($profarr3, ['SkillID' => $resultarr[0]]);
+                            break;
+                        case '4':
+                            array_push($profarr4, ['SkillID' => $resultarr[0]]);
+                            break;
+                        case '5':
+                            array_push($profarr5, ['SkillID' => $resultarr[0]]);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                $allarrs = [$profarr1, $profarr2, $profarr3, $profarr4, $profarr5];
+                if (is_array($ids)) {
+                    foreach ($ids as $id) {
+                        $count = 1;
+                        foreach ($allarrs as $profarr) {
+                            if (count($profarr) > 0) {
+
+                                $delpayload = array('AgentID' => $id, 'Skills' => $profarr);
+                                $this->curlcalls($delurl, "POST", $delpayload);
+                                $payload = array(
+                                    'AgentID' => $id, 'Skills' => $profarr, 'Proficiency' => $count
+                                );
+                                $responce = $this->curlcalls($url, "POST", $payload);
+                            }
+                            $count++;
+                        }
+                    }
+                } else {
+                    $count = 1;
+                    foreach ($allarrs as $profarr) {
+                        if (count($profarr) > 0) {
+
+
+                            $delpayload = array('AgentID' => $ids, 'Skills' => $profarr);
+                            $this->curlcalls($delurl, "POST", $delpayload);
+                            $payload = array(
+                                'AgentID' => $ids, 'Skills' => $profarr, 'Proficiency' => $count
+                            );
+                            $responce = $this->curlcalls($url, "POST", $payload);
+                        }
+                        $count++;
+                    }
+                }
+
+                if (!$responce == true) {
+                    return "ERROR";
+                }
+            } else {
+
+
+                foreach ($request['sarr'] as $skillId) {
+                    array_push($arr, ['SkillID' => $skillId]);
+                }
+                if (is_array($ids)) {
+                    foreach ($ids as $id) {
+
+
+                        // $payload = array('AgentID' => $id, 'Skills' => $profarr, 'Proficiency' => $count);
+                        $delpayload = array('AgentID' => $id, 'Skills' => $arr);
+                        $this->curlcalls($delurl, "POST", $delpayload);
+
+                        $payload = array(
+                            'AgentID' => $id, 'Skills' => $arr, 'Proficiency' => $request['prof']
+                        );
+                        $responce = $this->curlcalls($url, "POST", $payload);
+                    }
+                } else {
+
+                    $delpayload = array('AgentID' => $ids, 'Skills' => $arr);
+                    $this->curlcalls($delurl, "POST", $delpayload);
+
+                    $payload = array(
+                        'AgentID' => $ids, 'Skills' => $arr, 'Proficiency' => $request['prof']
+                    );
+                    $responce = $this->curlcalls($url, "POST", $payload);
+                }
+
+                if (!$responce == true) {
+                    return "ERROR";
+                }
             }
         } else {
+
             session()->forget('currentagentid');
             session(['currentagentid' => $request['id']]);
             return json_encode(session('skills'));
         }
     }
+    function setSkillProfs(Request $request)
+    {
+        session()->forget('skillidprof');
+        session(['skillidprof' => $request['skillidprof']]);
+    }
+    function getSkills(Request $request)
+    {
+        session()->forget('currentagentid');
+        session(['currentagentid' => $request['agentids']]);
+        return json_encode(session('skills'));
+    }
     function delSkill(Request $request)
     {
+        session()->forget('skillidprof');
         if ($request->isMethod("post")) {
+            $url = 'https://www.tmsliveonline.com/DataService/DataService.svc/RemoveAgentSkills';
             $skillid = $request['sid'];
             $agentid = $request['agentid'];
 
-            $url = 'https://www.tmsliveonline.com/DataService/DataService.svc/RemoveAgentSkills';
-            $payload = array('AgentID' => $agentid, 'Skills' => array(['SkillID' => $skillid]));
-            // return json_encode($payload);
+            if ($skillid == null) {
+                return "popwindow";
+            }
+            if (is_array($skillid)) {
 
-            $responce = json_encode($this->curlcalls($url, "post", $payload));
-            return $responce;
+                $agentids = session('currentagentid');
+                $arr = [];
+                foreach ($skillid as $skillId) {
+                    array_push($arr, ['SkillID' => $skillId]);
+                }
+                if (is_array($agentids)) {
+                    foreach ($agentids as $agentId) {
+                        $payload = array('AgentID' => $agentId, 'Skills' => $arr);
+                        $responce = json_encode($this->curlcalls($url, "post", $payload));
+                    }
+                    return $responce;
+                } else {
+                    $payload = array('AgentID' => $agentids, 'Skills' => $arr);
+                    $responce = json_encode($this->curlcalls($url, "post", $payload));
+                    return $responce;
+                }
+            } else {
+                $payload = array('AgentID' => $agentid, 'Skills' => array(['SkillID' => $skillid]));
+                // return json_encode($payload)
+                $responce = json_encode($this->curlcalls($url, "post", $payload));
+                return $responce;
+            }
         } else {
             return "false";
         }

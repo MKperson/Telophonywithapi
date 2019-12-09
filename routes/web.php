@@ -11,6 +11,8 @@
 |
 */
 
+use App\Http\Controllers\InContactController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -31,11 +33,16 @@ Route::get('updateDB', 'InContactController@updateDB');
 
 Route::post('setAgentsProf', 'InContactController@setAgentsProf');
 
+Route::post('setskillprofs', 'InContactController@setSkillProfs');
+
+
 Route::match(['get', 'post'],'addskill', 'InContactController@addSkill');
 
 Route::match(['get', 'post'],'delskill', 'InContactController@delSkill');
 
 Route::view('newskill','newskill');
+
+Route::get('getSkills', 'InContactController@getSkills');
 
 // Route::post('testpost', function () {
 //     return view('testpost');

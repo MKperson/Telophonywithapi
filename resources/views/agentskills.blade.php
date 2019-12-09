@@ -15,28 +15,29 @@
             </tr>
             <tr style="height: 19px;">
                 <td style="width: 100%; height: 19px;"><select class="form-control" data-live-search="true"
-                        onchange="load()" id="agents">
+                        onchange="load()" id="agents" data-width="auto" data-actions-box="true" data-selected-text-format="count > 3" data-count-selected-text="{0} People Selected">
                         <option> {{ $message }}</option>
                     </select></td>
             </tr>
             <tr>
-                <td style="width: 100%; text-align: center; padding: 10;" id="radiobutt" hidden><input name="select"
-                        id="select-1" onchange="toggle()" type="radio" value="1" checked />All Skills
-                    <input name="select" type="radio" id="select-2" value="2" onchange="toggle()" />Campaign </td>
+                <td style="width: 100%; text-align: center; padding: 10;" id="radiobutt"><input name="select"
+                        id="select-1" onchange="toggle()" type="radio" value="1" checked />Single Person
+                    <input name="select" type="radio" id="select-2" value="2" onchange="toggle()" />Bulk </td>
             </tr>
             <tr>
-                <td><select id="campaigns" style="width: 100%;" hidden>
-                        <option>NOT IMPLIMENTED YET</option>
-                    </select></td>
+                <td><textarea id="massel" style="width: 100%; height: 250px;" hidden placeholder="Paste Names Here. Must be in form &quot;Last, First&quot; please note that the space after the COMMA is REQUIRED"></textarea></td>
+            </tr>
+            <tr>
+                <td><button id="masselbutt" hidden onclick="massel('agents')">Select</button></td>
             </tr>
         </tbody>
     </table>
     <table id="recTable" style="width: 25%;background-color: white;" class="table display table-striped">
         <thead>
             <tr>
-                <th>Skill Name</th>
-                <th>Prof.</th>
-                <th>Action</th>
+                <th id="skillorname">Skill Name</th>
+                <th id="proforbl">Prof.</th>
+                <th id="actionorbl">Action</th>
             </tr>
         </thead>
         <tbody id=skillRec>

@@ -11,8 +11,40 @@
 |
 */
 
+use App\Http\Controllers\InContactController;
+
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/also', function () { return view('welcome'); });
+// Route::view('/welcome', 'welcome');
+
+//Route::view('/agentskills', 'agentskills');
+
+Route::get('agentskills', 'InContactController@agentskills');
+
+// Route::get('ajaxRequest', 'InContactController@ajaxRequest');
+
+Route::post('getAgentSkills', 'InContactController@getAgentSkills');
+
+//Route::post('setAgents', 'InContactController@setAgents');
+
+Route::get('updateDB', 'InContactController@updateDB');
+
+Route::post('setAgentsProf', 'InContactController@setAgentsProf');
+
+Route::post('setskillprofs', 'InContactController@setSkillProfs');
+
+
+Route::match(['get', 'post'],'addskill', 'InContactController@addSkill');
+
+Route::match(['get', 'post'],'delskill', 'InContactController@delSkill');
+
+Route::view('newskill','newskill');
+
+Route::get('getSkills', 'InContactController@getSkills');
+
+// Route::post('testpost', function () {
+//     return view('testpost');
+// });
+// Route::view('/test', 'test');

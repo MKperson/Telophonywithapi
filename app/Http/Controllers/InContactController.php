@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use ErrorException;
 use Facade\FlareClient\Http\Response;
 
 use Illuminate\Support\Facades\DB;
@@ -268,8 +269,19 @@ class InContactController extends Controller
     function getSkills(Request $request)
     {
         session()->forget('currentagentid');
-        session(['currentagentid' => $request['agentids']]);
-        return json_encode(session('skills'));
+        //var_dump($request['agentids']);
+        if ($request['agentids'] == null || (is_array($request['agentids']) && count($request['agentids']) == 0)) {
+            header('HTTP/1.1 500 Internal Server Booboo');
+            header('Content-Type: application/json; charset=UTF-8');
+            die(json_encode(array('message' => 'ERROR', 'code' => 500)));
+        } else if ($request['agentids'] == null || $request['agentids']=="") {
+            header('HTTP/1.1 500 Internal Server Booboo');
+            header('Content-Type: application/json; charset=UTF-8');
+            die(json_encode(array('message' => 'ERROR', 'code' => 500)));
+        } else {
+            session(['currentagentid' => $request['agentids']]);
+            return json_encode(session('skills'));
+        }
     }
     function delSkill(Request $request)
     {

@@ -484,13 +484,19 @@ function sorthelp(ray, columns, ascdesc) {
 
 }
 function btndelete(id = null) {
+    aid = $("#agents").val();
+    if(aid == null || aid.length == 0){
+        return alert("Is anyone Selected?");
+
+    }
     $('#loader').prop('style', 'display:block');
     //var val = $('#skillselect').val();
+
     if ($('#skillselect').val() != null) {
         id = $('#skillselect').val();
     }
     if (id == null) {
-        aid = $("#agents").val();
+        // aid = $("#agents").val();
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -529,12 +535,13 @@ function btndelete(id = null) {
             },
             error: function (message) {
                 console.log(message);
+                alert("Error is someone 'SELECTED'? ")
                 $('#loader').prop('style', 'display:none');
             },
 
         });
     } else {
-        aid = $("#agents").val();
+        // aid = $("#agents").val();
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -558,6 +565,7 @@ function btndelete(id = null) {
             },
             error: function (message) {
                 console.log(message);
+                alert("Error is something 'SELECTED'? ")
                 $('#loader').prop('style', 'display:none');
             },
 

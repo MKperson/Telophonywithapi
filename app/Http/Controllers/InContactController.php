@@ -41,7 +41,8 @@ class InContactController extends Controller
             'I lost the GAME',
             'Eric sees all Please Wait',
             'Please do 30 push-ups to complete loading',
-            $daysuntilxmas . ' Days to Christmas'
+            $daysuntilxmas . ' Days to Christmas',
+            'We are the Borg you will be assimilated resistance is futile.'
         );
         $rnum = rand(0, count($marr) - 1);
         return view('agentskills', ['message' => $marr[$rnum]]);

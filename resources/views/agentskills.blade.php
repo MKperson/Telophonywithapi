@@ -92,9 +92,12 @@
 
 
     <div id="addskillmodal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog"
-        aria-labelledby="myLargeModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        aria-labelledby="myLargeModalLabel" aria-hidden="true" style="overflow-y: scroll">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content" id="addskillhtml" style="padding: 25px;">
+                <div class="modal-header">
+                    <h5 class="modal-title">Skills</h5>
+                </div>
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" onclick="addSkill()">Add/Modify</button>
@@ -113,5 +116,17 @@
 @endsection
 @section('footer')
 <script type="text/javascript" src="..\resources\js\agentskill.js"></script>
-<iframe onload="popagents()" hidden></iframe>
+<script>
+    $(document).ready(function(){
+    $('#addskillmodal').on('hidden.bs.modal', function () {
+        // Load up a new modal...
+        $('#skillrecmodal').modal('show');
+        $('#skillselect').remove();
+    })
+    $('#skillselect').remove();
+    popagents();
+})
+
+</script>
+{{-- <iframe onload="" hidden></iframe> --}}
 @endsection

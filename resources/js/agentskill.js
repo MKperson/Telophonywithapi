@@ -49,21 +49,32 @@ function toggle() {
 }
 function changed(id, prof = null) {
     var num = $('#' + id).val();
-    $('#skillRec').empty();
+    if(id == 'skillselect'){
+        $('#skillRec2').empty();
+    }
+    else{
+        $('#skillRec').empty();
+    }
     for (i = 0; i < num.length; i++) {
         let text = $("#" + id + " option[value='" + num[i] + "']").text();
         if (prof != null) {
 
 
         } else {
-            $('#skillRec').append("<tr><td>" + text + "</td><td></td><td></td></tr>");
+            if(id == 'skillselect'){
+                $('#skillRec2').append("<tr><td>" + text + "</td><td></td><td></td></tr>");
+
+            }else{
+                $('#skillRec').append("<tr><td>" + text + "</td><td></td><td></td></tr>");
+            }
+
         }
         //console.log(text);
     }
     if (id == "agents") {
         // $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Delete Skills</button></td><td></td></tr>");
     } else if (id == 'skillselect') {
-        $('#skillRec').append("<tr><td><button id='subbutt' onclick=\"$('#subfunc').click()\">Submit</button></td><td></td><td></td></tr>");
+        $('#skillRec2').append("<tr><td><button id='subbutt' onclick=\"$('#subfunc').click()\">Submit</button></td><td></td><td></td></tr>");
     }
 
 }
@@ -335,7 +346,22 @@ function modprof(id) {
         },
     })
 }
+// function reopm() {
+//     $('#skillrecmodal').modal('show');
+// }
 function addSkill() {
+    $('#skillrecmodal').modal('hide');
+
+    //var test1 = $('#skillselect').val() = null;
+    //var test2 = $('#skillselect').val(null);
+    //var test3 = $('#skillselect').detach();
+    //var test4 = $('#skillselect').remove();
+    //var test5 = $('#skillselect').unwrap();
+    //var test6 = $('#skillselect').empty();
+
+
+
+
     $('#loader').prop('style', 'display:block');
     var agentid = $('#agents').val();
     if (Array.isArray(agentid) && agentid.length == 0) {
@@ -463,6 +489,8 @@ function addSkill() {
             },
             complete: function () {
                 $('#skillselect').selectpicker('refresh');
+                $('#profselect').selectpicker('refresh');
+                // $('#addskillmodal').modal('handleUpdate');
                 $('#addskillmodal').modal('show');
                 $('#loader').prop('style', 'display:none');
             },
@@ -484,8 +512,9 @@ function addSkill() {
                 // dataType: "json",
                 success: function (data) {
                     //alert(data);
-                    window.opener.load();
-                    window.close();
+                    $('#addskillmodal').modal('hide');
+                    load();
+                    // window.close();
                 },
                 error: function (message) {
                     debugger;

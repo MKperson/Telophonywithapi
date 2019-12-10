@@ -4,7 +4,7 @@
 @parent
 <div class="jumbotron text-center">
     <H1>Agent Skills Manager</H1>
-    <h5 style="color: red">Currently under development not all functions working<h5>
+    {{-- <h5 style="color: red">Currently under development not all functions working<h5> --}}
 </div>
 @endsection
 @section('content')

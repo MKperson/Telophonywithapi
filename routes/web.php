@@ -35,12 +35,16 @@ Route::post('setAgentsProf', 'InContactController@setAgentsProf');
 
 Route::post('setskillprofs', 'InContactController@setSkillProfs');
 
+// Route::get('forgetskillprof', 'InContactController@setSkillProfs');
+Route::get('forgetskillprof', function () {
+    session()->forget('skillidprof');
+});
 
-Route::match(['get', 'post'],'addskill', 'InContactController@addSkill');
+Route::match(['get', 'post'], 'addskill', 'InContactController@addSkill');
 
-Route::match(['get', 'post'],'delskill', 'InContactController@delSkill');
+Route::match(['get', 'post'], 'delskill', 'InContactController@delSkill');
 
-Route::view('newskill','newskill');
+// Route::view('newskill','newskill');
 
 Route::get('getSkills', 'InContactController@getSkills');
 

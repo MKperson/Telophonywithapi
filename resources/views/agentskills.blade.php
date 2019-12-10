@@ -28,12 +28,12 @@
                     <input name="select" type="radio" id="select-2" value="2" onchange="toggle()" />Bulk </td>
             </tr>
             <tr>
-                <td><textarea id="massel" style="width: 100%; height: 250px;" hidden
+                <td><textarea class="form-control" id="massel" style="width: 100%; height: 250px;" hidden
                         placeholder="Paste Names Here. Must be in form &quot;Last, First&quot; please note that the space after the COMMA is REQUIRED"></textarea>
                 </td>
             </tr>
             <tr>
-                <td><button id="masselbutt" hidden onclick="massel('agents')">Select</button></td>
+                <td><button class="btn btn-sm btn-primary" id="masselbutt" hidden onclick="massel('agents')">Select</button></td>
             </tr>
         </tbody>
     </table>

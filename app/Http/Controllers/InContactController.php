@@ -248,6 +248,7 @@ class InContactController extends Controller
     {
         session()->forget('skillidprof');
         session(['skillidprof' => $request['skillidprof']]);
+        
     }
     function getSkills(Request $request)
     {

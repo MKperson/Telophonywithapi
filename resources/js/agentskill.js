@@ -5,7 +5,7 @@ function toggle() {
         $('#proforbl').html('Prof.');
         $('#actionorbl').html('Action');
         $('#agents').prop('multiple', false);
-        $('#agents').attr('onchange', "load()");
+        $('#agents').attr('onchange', "load();$('#reop').prop('hidden',false);");
         $('#agents').removeAttr('data-actions-box');
         $('#agents').val([]);
         $('#skillRec').empty();
@@ -16,14 +16,20 @@ function toggle() {
         $('#masselbutt').prop('hidden', true);
         $('#agents').prop('disabled', false);
         $('#agents').selectpicker('refresh');
+        $('#reop').text('Reopen View');
+        $('#reop').prop('hidden', true);
     }
     else {
+        $('#reop').prop('hidden', true);
+
         $('#skillorname').html('Name');
+        $('#reop').text('View Selected');
+
         $('#proforbl').html('');
         $('#actionorbl').html('');
 
         $('#agents').prop('multiple', true);
-        $('#agents').attr('onchange', "changed('agents')");
+        $('#agents').attr('onchange', "changed('agents');$('#reop').prop('hidden',false);");
         //$('#agents').removeAttr('onchange');
         $('#agents').attr('data-actions-box', true);
 
@@ -36,7 +42,7 @@ function toggle() {
             selectAllText: 'Select All',
             deselectAllText: 'Deselect All'
         });
-        $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Delete Skills</button></td><td></td></tr>");
+        // $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Delete Skills</button></td><td></td></tr>");
         $('#massel').prop('hidden', false);
         $('#masselbutt').prop('hidden', false);
     }
@@ -55,7 +61,7 @@ function changed(id, prof = null) {
         //console.log(text);
     }
     if (id == "agents") {
-        $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Delete Skills</button></td><td></td></tr>");
+        // $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Delete Skills</button></td><td></td></tr>");
     } else if (id == 'skillselect') {
         $('#skillRec').append("<tr><td><button id='subbutt' onclick=\"$('#subfunc').click()\">Submit</button></td><td></td><td></td></tr>");
     }
@@ -106,7 +112,7 @@ function massel(id) {
                 }
             }
         }
-        $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Delete Skills</button></td><td></td></tr>");
+        // $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Delete Skills</button></td><td></td></tr>");
     }
     if (ids.length == names.length) {
         $('#' + id).selectpicker('val', ids);
@@ -259,7 +265,7 @@ function load() {
                     //$('#selected_prof'+i+' option[value=' + prof +']').attr('selected','selected');
                     $('#' + data[i]['SkillID']).val(prof);
                 }
-                $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Bulk Delete</button></td><td></td></tr>");
+                // $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Bulk Delete</button></td><td></td></tr>");
 
                 //$('#radiobutt').prop('hidden', false);
 
@@ -273,6 +279,12 @@ function load() {
                 console.log(message);
                 $('#loader').prop('style', 'display:none');
             },
+            complete: function () {
+
+                $('#skillrecmodal').modal('show');
+
+            },
+
 
         });
     } else {
@@ -280,8 +292,7 @@ function load() {
         $('#skillRec').empty();
         $('#loader').prop('style', 'display:none');
         if (Array.isArray(val)) {
-            $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Delete Skills</button></td><td></td></tr>" +
-                "<tr><td>Updated " + val.length + " Agent/s </td><td></td><td></td></tr>");
+            $('#skillRec').append("<tr><td>Updated " + val.length + " Agent/s </td><td></td><td></td></tr>");
         }
     }
 }
@@ -344,26 +355,103 @@ function addSkill() {
             },
             dataType: "json",
             success: function (data) {
+                let html = `<div class="modal-header">
+                <h5 class="modal-title">Skills</h5>
+            </div>
+            <div class="row h-25 justify-content-center">
+
+    <br>
+            <table>
+                <tr>
+                    <th><label>Populate</label></th>
+                </tr>
+                <tbody>
+                    <tr>
+                        <td><textarea id="massel" style="width: 250px; height: 250px;"
+                                placeholder="Paste Skills Here. Must be in correct form.    Press [alt] + [0][9] to insert tab if needed. List must be consistent"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><button id="masselbutt" onclick="massel('skillselect')">Select</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table>
+            <thead>
+                <tr>
+                    <th>
+                        <label>Pick a Skill or Skills</label>
+                    </th>
+                    <th id="proflable"><label>Select Proficency</label></th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+
+                        <td class="top">
+                            <select id="skillselect" class="selectpicker" multiple data-live-search="true"
+                                data-actions-box="true" onchange="$('#subbutt').prop('disabled',false),changed('skillselect')">
+
+                            </select>
+                        </td>
+                        <td>
+                            <select class="selectpicker" id="profselect">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3" selected>3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="recTable" style="width: 25%;background-color: white;" class="table display table-striped">
+                <thead>
+                    <tr>
+                        <th id="skillorname">Skill Name</th>
+                        <th id="proforbl">Prof.</th>
+
+                    </tr>
+                </thead>
+                <tbody id=skillRec2>
+
+                </tbody>
+            </table>
+            <input type="hidden" id="subfunc">
+            </div>`;
                 //debugger;
                 var sskills = sorthelp(data, ['skillName'], ['ASC']);
 
-                let skillWindow = PopupCenter("./newskill", "SkillWindow", 1200, 500);
+                //let skillWindow = PopupCenter("./newskill", "SkillWindow", 1200, 500);
 
-                skillWindow.focus();
+                // let html = skillWindow.html();
 
-                skillWindow.onload = function () {
-                    skillWindow.$('#subfunc').attr('onclick', 'addSkill()');
-                    //let html = `<div style="font-size:30px">Welcome!</div>`;
-                    //skillWindow.document.body.insertAdjacentHTML("afterbegin",html);
-                    skillWindow.$('#skillselect').empty()
-                    // debugger;
-                    for (var i = 0; i < sskills.length; i++) {
-                        skillWindow.$('#skillselect').append("<option value=\"" + sskills[i]['skillId'] + "\">" + sskills[i]['skillName'] + "</option>")
-                    }
+                //skillWindow.focus();
+
+                $('#addskillhtml').html(html);
+
+                // skillWindow.onload = function () {
+                // skillWindow.
+
+                $('#subfunc').attr('onclick', 'addSkill()');
+
+
+                //let html = `<div style="font-size:30px">Welcome!</div>`;
+                //skillWindow.document.body.insertAdjacentHTML("afterbegin",html);
+                // skillWindow.
+
+                $('#skillselect').empty()
+
+                // debugger;
+
+                for (var i = 0; i < sskills.length; i++) {
+                    $('#skillselect').append("<option value=\"" + sskills[i]['skillId'] + "\">" + sskills[i]['skillName'] + "</option>")
                 }
+                // }
                 console.log(data);
                 // console.log(JSON.stringify(data));
-                $('#loader').prop('style', 'display:none');
+                // $('#loader').prop('style', 'display:none');
                 // skillWindow.onclose = function(){
                 //     debugger;
                 //     load();
@@ -371,6 +459,11 @@ function addSkill() {
             },
             error: function (message) {
                 console.log(message);
+                $('#loader').prop('style', 'display:none');
+            },
+            complete: function () {
+                $('#skillselect').selectpicker('refresh');
+                $('#addskillmodal').modal('show');
                 $('#loader').prop('style', 'display:none');
             },
 
@@ -485,9 +578,8 @@ function sorthelp(ray, columns, ascdesc) {
 }
 function btndelete(id = null) {
     aid = $("#agents").val();
-    if(aid == null || aid.length == 0){
+    if (Array.isArray(aid) && aid.length == 0) {
         return alert("Is anyone Selected?");
-
     }
     $('#loader').prop('style', 'display:block');
     //var val = $('#skillselect').val();

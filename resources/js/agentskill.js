@@ -180,11 +180,11 @@ function massel(id) {
                     $('#profselect').selectpicker('refresh');
                     $('#proflable').prop('hidden', true);
                     $.ajax({
-                        url:'forgetskillprof',
-                        method:'get',
-                        success:function(){},
-                        error:function(){},
-                        complete:function(){}
+                        url: 'forgetskillprof',
+                        method: 'get',
+                        success: function () { },
+                        error: function () { },
+                        complete: function () { }
                     });
                 } else {
                     $('#' + skillrec).empty();
@@ -323,7 +323,7 @@ function load() {
             complete: function () {
 
                 $('#skillrecmodal').modal('show');
-
+                $('#modalloader2').prop('style', 'display:none');
             },
 
 
@@ -333,6 +333,8 @@ function load() {
         $('#skillRec').empty();
         $('#loader').prop('style', 'display:none');
         $('#modalloader').prop('style', 'display:none');
+        $('#modalloader2').prop('style', 'display:none');
+
         if (Array.isArray(val)) {
             $('#skillRec').append("<tr><td>Updated " + val.length + " Agent/s </td><td></td><td></td></tr>");
         }
@@ -342,7 +344,7 @@ function load() {
 function modprof(id) {
     $('#loader').prop('style', 'display:block');
     $('#modalloader').prop('style', 'display:block');
-
+    $('#modalloader2').prop('style', 'display:block');
     var arr = {
         "AgentID": $('#agents').val(),
         "Skills": [
@@ -377,6 +379,8 @@ function modprof(id) {
             console.log(message);
             $('#loader').prop('style', 'display:none');
             $('#modalloader').prop('style', 'display:none');
+            $('#modalloader2').prop('style', 'display:none');
+
         },
     })
 }
@@ -385,6 +389,7 @@ function modprof(id) {
 // }
 function addSkill() {
     $('#skillrecmodal').modal('hide');
+    $('#modalloader2').prop('style', 'display:block');
 
 
     $('#loader').prop('style', 'display:block');
@@ -422,7 +427,7 @@ function addSkill() {
             </thead>
                 <tbody>
                     <tr>
-                        <td><textarea class="form-control" id="massel2" style="height: 250px;"
+                        <td><textarea class="form-control" id="massel2" style="height: 250px ;border-radius: 10px;resize: none;"
                                 placeholder="Paste Skills Here. Must be in correct form.    Press [alt] + [0][9] to insert tab if needed. List must be consistent"></textarea>
                         </td>
                     </tr>
@@ -541,7 +546,7 @@ function addSkill() {
                 success: function (data) {
                     //alert(data);
                     $('#addskillmodal').modal('hide');
-                    load();
+                    // load();
                     // window.close();
                 },
                 error: function (message) {
@@ -641,6 +646,7 @@ function btndelete(id = null) {
     }
     $('#loader').prop('style', 'display:block');
     $('#modalloader').prop('style', 'display:block');
+    $('#modalloader2').prop('style', 'display:block');
     //var val = $('#skillselect').val();
 
     if ($('#skillselect').val() != null) {
@@ -677,7 +683,7 @@ function btndelete(id = null) {
                 </thead>
                 <tbody>
                     <tr>
-                        <td><textarea class="form-control" id="massel2" style="height: 250px;"
+                        <td><textarea class="form-control" id="massel2" style="height: 250px; border-radius: 10px;resize: none;"
                                 placeholder="Paste Skills Here. Must be in correct form.    Press [alt] + [0][9] to insert tab if needed. List must be consistent"></textarea>
                         </td>
                     </tr>
@@ -782,13 +788,20 @@ function btndelete(id = null) {
             success: function (data) {
                 console.log(data);
                 if (Array.isArray(id)) {
+                    if(!$('#addskillmodal').is(":visible")){
+                        load();
+                    }
                     $('#addskillmodal').modal('hide');
-                    load();
+                    // load();
                     // window.close();
                 }
                 else {
+                    if(!$('#addskillmodal').is(":visible")){
+                        load();
+                    }
                     $('#addskillmodal').modal('hide');
-                    load();
+
+                    // load();
                     // $('#loader').prop('style', 'display:none');
                 }
             },

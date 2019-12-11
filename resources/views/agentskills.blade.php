@@ -28,7 +28,7 @@
                     <input name="select" type="radio" id="select-2" value="2" onchange="toggle()" />Bulk </td>
             </tr>
             <tr>
-                <td><textarea class="form-control" id="massel" style="width: 100%; height: 250px;" hidden
+                <td><textarea class="form-control" id="massel" style="width: 100%; height: 250px;border-radius: 10px;resize: none; " hidden
                         placeholder="Paste Names Here. Must be in form &quot;Last, First&quot; please note that the space after the COMMA is REQUIRED"></textarea>
                 </td>
             </tr>
@@ -38,11 +38,12 @@
         </tbody>
     </table>
     <button id="reop" class="btn btn-sm btn-primary" onclick="$('#skillrecmodal').modal('show');"
-        style="max-height:50px; margin: auto 0px auto 10px;" hidden>Reopen view</button>
+        style="max-height:50px; margin: auto 0px auto 10px;" hidden>Reopen View</button>
     <div id="skillrecmodal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog"
         aria-labelledby="myLargeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
+                    <div id="modalloader2" class="loading" style="display: none;">Please Wait</div>
                 <div class="modal-header">
                     <h5 class="modal-title">Skills</h5>
                     {{-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -121,6 +122,7 @@
     $('#addskillmodal').on('hidden.bs.modal', function () {
         // Load up a new modal...
         $('#skillrecmodal').modal('show');
+        load();
         $('#skillselect').remove();
     })
     $('#skillselect').remove();

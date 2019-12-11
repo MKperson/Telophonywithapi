@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use ErrorException;
 use Facade\FlareClient\Http\Response;
 
 use Illuminate\Support\Facades\DB;
@@ -24,44 +25,27 @@ class InContactController extends Controller
     public function agentskills()
     {
         $message = 'Please Wait';
-        $rnum = rand(0, 9);
+        // $rnum = rand(0, 9);
         //$rnum = 6;
-        switch ($rnum) {
-            case 0:
-                $message = 'Its all Sephens fault';
-                break;
-            case 1:
-                $message = 'Waiting on InContact';
-                break;
-            case 2:
-                $message = 'Will Broke it. Fix in progress. Please Wait';
-                break;
-            case 3:
-                $message = 'Constructing Additional Pylons';
-                break;
-            case 4:
-                $message = 'Waiting on Stephen\'s API';
-                break;
-            case 5:
-                $message = 'All of IT is busy Please Wait';
-                break;
-            case 6:
-                $message = 'To load or not to load that is the question';
-                break;
-            case 7:
-                $message = 'New guy has been notified of your long Wait';
-                break;
-            case 8:
-                $message = 'I lost the GAME';
-                break;
-            case 9:
-                $message = 'Eric sees all Please Wait';
-                break;
-            default:
-                break;
-        }
+        $daysuntilxmas = ceil((mktime(0, 0, 0, 12, 25, date('Y')) - time()) / 86400);
 
-        return view('agentskills', ['message' => $message]);
+        $marr = array(
+            'Its all Sephens fault',
+            'Waiting on InContact',
+            'Will Broke it. Fix in progress. Please Wait',
+            'Constructing Additional Pylons',
+            'Waiting on Stephen\'s API',
+            'All of IT is Working on it Please Wait',
+            'To load or not to load that is the question',
+            'New guy has been notified of your long Wait',
+            'I lost the GAME',
+            'Eric sees all Please Wait',
+            'Please do 30 push-ups to complete loading',
+            $daysuntilxmas . ' Days to Christmas',
+            'We are the Borg you will be assimilated resistance is futile.'
+        );
+        $rnum = rand(0, count($marr) - 1);
+        return view('agentskills', ['message' => $marr[$rnum]]);
     }
 
     private function curlcalls($url, $method, $payload = null)
@@ -264,12 +248,24 @@ class InContactController extends Controller
     {
         session()->forget('skillidprof');
         session(['skillidprof' => $request['skillidprof']]);
+        
     }
     function getSkills(Request $request)
     {
         session()->forget('currentagentid');
-        session(['currentagentid' => $request['agentids']]);
-        return json_encode(session('skills'));
+        //var_dump($request['agentids']);
+        if ($request['agentids'] == null || (is_array($request['agentids']) && count($request['agentids']) == 0)) {
+            header('HTTP/1.1 500 Internal Server Booboo');
+            header('Content-Type: application/json; charset=UTF-8');
+            die(json_encode(array('message' => 'ERROR', 'code' => 500)));
+        } else if ($request['agentids'] == null || $request['agentids'] == "") {
+            header('HTTP/1.1 500 Internal Server Booboo');
+            header('Content-Type: application/json; charset=UTF-8');
+            die(json_encode(array('message' => 'ERROR', 'code' => 500)));
+        } else {
+            session(['currentagentid' => $request['agentids']]);
+            return json_encode(session('skills'));
+        }
     }
     function delSkill(Request $request)
     {

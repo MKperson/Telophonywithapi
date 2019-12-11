@@ -5,7 +5,7 @@ function toggle() {
         $('#proforbl').html('Prof.');
         $('#actionorbl').html('Action');
         $('#agents').prop('multiple', false);
-        $('#agents').attr('onchange', "load()");
+        $('#agents').attr('onchange', "load();$('#reop').prop('hidden',false);");
         $('#agents').removeAttr('data-actions-box');
         $('#agents').val([]);
         $('#skillRec').empty();
@@ -16,14 +16,20 @@ function toggle() {
         $('#masselbutt').prop('hidden', true);
         $('#agents').prop('disabled', false);
         $('#agents').selectpicker('refresh');
+        $('#reop').text('Reopen View');
+        $('#reop').prop('hidden', true);
     }
     else {
+        $('#reop').prop('hidden', true);
+
         $('#skillorname').html('Name');
+        $('#reop').text('View Selected');
+
         $('#proforbl').html('');
         $('#actionorbl').html('');
 
         $('#agents').prop('multiple', true);
-        $('#agents').attr('onchange', "changed('agents')");
+        $('#agents').attr('onchange', "changed('agents');$('#reop').prop('hidden',false);");
         //$('#agents').removeAttr('onchange');
         $('#agents').attr('data-actions-box', true);
 
@@ -36,34 +42,48 @@ function toggle() {
             selectAllText: 'Select All',
             deselectAllText: 'Deselect All'
         });
-        $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Delete Skills</button></td><td></td></tr>");
+        // $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Delete Skills</button></td><td></td></tr>");
         $('#massel').prop('hidden', false);
         $('#masselbutt').prop('hidden', false);
     }
 }
 function changed(id, prof = null) {
     var num = $('#' + id).val();
-    $('#skillRec').empty();
+    if (id == 'skillselect') {
+        var skillrec = 'skillRec2';
+    }
+    else {
+        var skillrec = 'skillRec';
+    }
+    $('#' + skillrec).empty();
     for (i = 0; i < num.length; i++) {
         let text = $("#" + id + " option[value='" + num[i] + "']").text();
         if (prof != null) {
 
-
         } else {
-            $('#skillRec').append("<tr><td>" + text + "</td><td></td><td></td></tr>");
+            $('#' + skillrec).append("<tr><td>" + text + "</td><td></td><td></td></tr>");
         }
         //console.log(text);
     }
     if (id == "agents") {
-        $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Delete Skills</button></td><td></td></tr>");
+        // $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Delete Skills</button></td><td></td></tr>");
     } else if (id == 'skillselect') {
-        $('#skillRec').append("<tr><td><button id='subbutt' onclick=\"$('#subfunc').click()\">Submit</button></td><td></td><td></td></tr>");
+        $('#' + skillrec).append("<tr><td><button class=\"btn btn-sm btn-primary\" id='subbutt' onclick=\"$('#subfunc').click()\">Submit</button></td><td></td><td></td></tr>");
     }
 
 }
 function massel(id) {
+    if (id == 'skillselect') {
+        var mass = 'massel2';
+        var skillrec = 'skillRec2';
+    }
+    else {
+        var mass = 'massel';
+        var skillrec = 'skillRec';
+    }
 
-    var text = $('#massel').val();
+    var text = $('#' + mass).val();
+
     var names = text.split('\n');
     var ids = [];
     var skillidprof = [];
@@ -95,18 +115,18 @@ function massel(id) {
             }
         }
     } else {
-        $('#skillRec').empty();
+        $('#' + skillrec).empty();
         for (i = 0; i < names.length; i++) {
             //alert(regexp.test(names[i]));
             if (!names[i] == "" && !names[i] == " " && regexp.test(names[i])) {
                 var v = $("#" + id + " option:contains(" + names[i] + ")").val();
                 if (v != null) {
-                    $('#skillRec').append("<tr><td>" + names[i] + "</td><td></td><td></td></tr>")
+                    $('#' + skillrec).append("<tr><td>" + names[i] + "</td><td></td><td></td></tr>")
                     ids.push(v);
                 }
             }
         }
-        $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Delete Skills</button></td><td></td></tr>");
+        // $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Delete Skills</button></td><td></td></tr>");
     }
     if (ids.length == names.length) {
         $('#' + id).selectpicker('val', ids);
@@ -116,13 +136,13 @@ function massel(id) {
             $('#subbutt').prop('disabled', false);
             if (ids.length == skillidprof.length) {
 
-                $('#skillRec').empty();
+                $('#' + skillrec).empty();
 
                 for (i = 0; i < names.length; i++) {
                     let split = names[i].split('\t')
-                    $('#skillRec').append("<tr><td>" + split[0] + "</td><td>" + split[1] + "</td><td></td></tr>");
+                    $('#' + skillrec).append("<tr><td>" + split[0] + "</td><td>" + split[1] + "</td><td></td></tr>");
                 }
-                $('#skillRec').append("<tr><td><button id='subbutt' onclick=\"$('#subfunc').click()\">Submit</button></td><td></td><td></td></tr>");
+                $('#' + skillrec).append("<tr><td><button class=\"btn btn-sm btn-primary\" id='subbutt' onclick=\"$('#subfunc').click()\">Submit</button></td><td></td><td></td></tr>");
 
                 $('#profselect').selectpicker('destroy');
                 $('#profselect').prop('hidden', true);
@@ -137,25 +157,47 @@ function massel(id) {
                         skillidprof: skillidprof,
                     },
                     method: "post",
-                    dataType: 'json',
+
                     success: function (data) {
-                        alert(data);
-                    }
+                        console.log(data);
+                    },
+                    error: function (message) {
+                        alert("ERROR");
+                        console.log(message)
+                    },
+                    complete: function () {
+                        $('#reop').prop('hidden', false);
+
+
+                    },
                 });
             }
             else {
                 if (skillidprof != 0) {
                     alert("Data must be consistent to set individual proficiency per skill\n(Note: If you are REMOVING skills you do not need proficiencys)")
                     changed(id);
+                    $('#profselect').prop('hidden', false);
+                    $('#profselect').selectpicker('refresh');
+                    $('#proflable').prop('hidden', true);
+                    $.ajax({
+                        url: 'forgetskillprof',
+                        method: 'get',
+                        success: function () { },
+                        error: function () { },
+                        complete: function () { }
+                    });
                 } else {
-                    $('#skillRec').empty();
+                    $('#' + skillrec).empty();
                     for (i = 0; i < names.length; i++) {
                         //let split = names[i].split('\t')
-                        $('#skillRec').append("<tr><td>" + names[i] + "</td><td></td><td></td></tr>");
+                        $('#' + skillrec).append("<tr><td>" + names[i] + "</td><td></td><td></td></tr>");
                     }
-                    $('#skillRec').append("<tr><td><button id='subbutt' onclick=\"$('#subfunc').click()\">Submit</button></td><td></td><td></td></tr>");
+                    $('#' + skillrec).append("<tr><td><button class=\"btn btn-sm btn-primary\" id='subbutt' onclick=\"$('#subfunc').click()\">Submit</button></td><td></td><td></td></tr>");
                 }
             }
+        } else {
+            $('#skillrecmodal').modal('show');
+            $('#reop').prop('hidden', false);
         }
 
     } else {
@@ -166,6 +208,7 @@ function massel(id) {
 }
 function popagents() {
     $('#loader').prop('style', 'display:block');
+    $('#modalloader').prop('style', 'display:block');
     //$('#main').prop('style', 'display:none');
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     var sagents;
@@ -193,6 +236,7 @@ function popagents() {
 
 
             $('#loader').prop('style', 'display:none');
+            $('#modalloader').prop('style', 'display:none');
             //$('#main').prop('style', 'display:block');
         },
         error: function (message) {
@@ -204,6 +248,7 @@ function popagents() {
 function load() {
 
     $('#loader').prop('style', 'display:block');
+    $('#modalloader').prop('style', 'display:block');
     var val = $('#agents').val();
     var bool = Array.isArray(val);
     if (val != "" && Array.isArray(val) != true) {
@@ -259,36 +304,47 @@ function load() {
                     //$('#selected_prof'+i+' option[value=' + prof +']').attr('selected','selected');
                     $('#' + data[i]['SkillID']).val(prof);
                 }
-                $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Bulk Delete</button></td><td></td></tr>");
+                // $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Bulk Delete</button></td><td></td></tr>");
 
                 //$('#radiobutt').prop('hidden', false);
 
                 $('#sessiontest').empty();
                 //$('#sessiontest').append("<div id='sessiontest' class=\"row\"><?php if (!empty(session('agents'))) {echo session('agents');} ?></div>");
                 $('#loader').prop('style', 'display:none');
+                $('#modalloader').prop('style', 'display:none');
 
             },
             error: function (message) {
                 debugger;
                 console.log(message);
                 $('#loader').prop('style', 'display:none');
+                $('#modalloader').prop('style', 'display:none');
             },
+            complete: function () {
+
+                $('#skillrecmodal').modal('show');
+                $('#modalloader2').prop('style', 'display:none');
+            },
+
 
         });
     } else {
         //$('#radiobutt').prop('hidden', true);
         $('#skillRec').empty();
         $('#loader').prop('style', 'display:none');
+        $('#modalloader').prop('style', 'display:none');
+        $('#modalloader2').prop('style', 'display:none');
+
         if (Array.isArray(val)) {
-            $('#skillRec').append("<tr><td><button onclick='addSkill()'>Add/Modify Skills</button></td><td><button onclick='btndelete()'>Delete Skills</button></td><td></td></tr>" +
-                "<tr><td>Updated " + val.length + " Agent/s </td><td></td><td></td></tr>");
+            $('#skillRec').append("<tr><td>Updated " + val.length + " Agent/s </td><td></td><td></td></tr>");
         }
     }
 }
 
 function modprof(id) {
     $('#loader').prop('style', 'display:block');
-
+    $('#modalloader').prop('style', 'display:block');
+    $('#modalloader2').prop('style', 'display:block');
     var arr = {
         "AgentID": $('#agents').val(),
         "Skills": [
@@ -316,20 +372,33 @@ function modprof(id) {
         success: function (data) {
             console.log(data);
             $('#loader').prop('style', 'display:none');
+            $('#modalloader').prop('style', 'display:none');
             load();
         },
         error: function (message) {
             console.log(message);
             $('#loader').prop('style', 'display:none');
+            $('#modalloader').prop('style', 'display:none');
+            $('#modalloader2').prop('style', 'display:none');
+
         },
     })
 }
+// function reopm() {
+//     $('#skillrecmodal').modal('show');
+// }
 function addSkill() {
+    $('#skillrecmodal').modal('hide');
+    $('#modalloader2').prop('style', 'display:block');
+
+
     $('#loader').prop('style', 'display:block');
+    $('#modalloader').prop('style', 'display:block');
     var agentid = $('#agents').val();
     if (Array.isArray(agentid) && agentid.length == 0) {
         alert("Please check your list No one is selected");
         $('#loader').prop('style', 'display:none');
+        $('#modalloader').prop('style', 'display:none');
     }
     else if ($('#skillselect').val() == null) {
 
@@ -344,26 +413,102 @@ function addSkill() {
             },
             dataType: "json",
             success: function (data) {
+                let html = `<div class="modal-header">
+                <h5 class="modal-title">Add Skills</h5>
+            </div>
+            <div class="row h-25 justify-content-center">
+            <div id="modalloader" class="loading" style="display: none;">Please Wait</div>
+
+            <table style="background-color: white;" class="table display table-striped">
+            <thead>
+            <tr>
+                <th><label>Populate</label></th>
+            </tr>
+            </thead>
+                <tbody>
+                    <tr>
+                        <td><textarea class="form-control" id="massel2" style="height: 250px ;border-radius: 10px;resize: none;"
+                                placeholder="Paste Skills Here. Must be in correct form.    Press [alt] + [0][9] to insert tab if needed. List must be consistent"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><button class="btn btn-sm btn-primary" id="masselbutt" onclick="massel('skillselect')">Select</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table style="background-color: white;" class="table display table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        <label>Pick a Skill or Skills</label>
+                    </th>
+                    <th id="proflable"><label>Select Proficency</label></th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+
+                        <td class="top">
+                            <select id="skillselect" class="selectpicker" multiple data-live-search="true"
+                                data-actions-box="true" onchange="$('#subbutt').prop('disabled',false),changed('skillselect')">
+
+                            </select>
+                        </td>
+                        <td>
+                            <select class="selectpicker" id="profselect">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3" selected>3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="recTable" style="background-color: white;" class="table display table-striped">
+                <thead>
+                    <tr>
+                        <th id="skillorname">Skill Name</th>
+                        <th id="proforbl">Prof.</th>
+
+                    </tr>
+                </thead>
+                <tbody id=skillRec2>
+
+                </tbody>
+            </table>
+            <input type="hidden" id="subfunc">
+            </div>`;
                 //debugger;
                 var sskills = sorthelp(data, ['skillName'], ['ASC']);
 
-                let skillWindow = PopupCenter("./newskill", "SkillWindow", 1200, 500);
+                //let skillWindow = PopupCenter("./newskill", "SkillWindow", 1200, 500);
+                // let html = skillWindow.html();
+                //skillWindow.focus();
 
-                skillWindow.focus();
+                $('#addskillhtml').html(html);
 
-                skillWindow.onload = function () {
-                    skillWindow.$('#subfunc').attr('onclick', 'addSkill()');
-                    //let html = `<div style="font-size:30px">Welcome!</div>`;
-                    //skillWindow.document.body.insertAdjacentHTML("afterbegin",html);
-                    skillWindow.$('#skillselect').empty()
-                    // debugger;
-                    for (var i = 0; i < sskills.length; i++) {
-                        skillWindow.$('#skillselect').append("<option value=\"" + sskills[i]['skillId'] + "\">" + sskills[i]['skillName'] + "</option>")
-                    }
+                // skillWindow.onload = function () {
+                // skillWindow.
+
+                $('#subfunc').attr('onclick', 'addSkill()');
+
+                //let html = `<div style="font-size:30px">Welcome!</div>`;
+                //skillWindow.document.body.insertAdjacentHTML("afterbegin",html);
+                // skillWindow.
+
+                $('#skillselect').empty()
+
+                // debugger;
+
+                for (var i = 0; i < sskills.length; i++) {
+                    $('#skillselect').append("<option value=\"" + sskills[i]['skillId'] + "\">" + sskills[i]['skillName'] + "</option>")
                 }
+                // }
                 console.log(data);
                 // console.log(JSON.stringify(data));
-                $('#loader').prop('style', 'display:none');
+                // $('#loader').prop('style', 'display:none');
                 // skillWindow.onclose = function(){
                 //     debugger;
                 //     load();
@@ -372,6 +517,15 @@ function addSkill() {
             error: function (message) {
                 console.log(message);
                 $('#loader').prop('style', 'display:none');
+                $('#modalloader').prop('style', 'display:none');
+            },
+            complete: function () {
+                $('#skillselect').selectpicker('refresh');
+                $('#profselect').selectpicker('refresh');
+                // $('#addskillmodal').modal('handleUpdate');
+                $('#addskillmodal').modal('show');
+                $('#loader').prop('style', 'display:none');
+                $('#modalloader').prop('style', 'display:none');
             },
 
         })
@@ -391,8 +545,9 @@ function addSkill() {
                 // dataType: "json",
                 success: function (data) {
                     //alert(data);
-                    window.opener.load();
-                    window.close();
+                    $('#addskillmodal').modal('hide');
+                    // load();
+                    // window.close();
                 },
                 error: function (message) {
                     debugger;
@@ -406,6 +561,7 @@ function addSkill() {
         else {
             alert('Please Select at least 1 Skill');
             $('#loader').prop('style', 'display:none');
+            $('#modalloader').prop('style', 'display:none');
         }
 
     }
@@ -484,13 +640,20 @@ function sorthelp(ray, columns, ascdesc) {
 
 }
 function btndelete(id = null) {
+    aid = $("#agents").val();
+    if (Array.isArray(aid) && aid.length == 0) {
+        return alert("Is anyone Selected?");
+    }
     $('#loader').prop('style', 'display:block');
+    $('#modalloader').prop('style', 'display:block');
+    $('#modalloader2').prop('style', 'display:block');
     //var val = $('#skillselect').val();
+
     if ($('#skillselect').val() != null) {
         id = $('#skillselect').val();
     }
     if (id == null) {
-        aid = $("#agents").val();
+        // aid = $("#agents").val();
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -503,38 +666,115 @@ function btndelete(id = null) {
             dataType: "json",
             success: function (data) {
                 $('#loader').prop('style', 'display:none');
+                $('#modalloader').prop('style', 'display:none');
                 console.log(data);
 
+
+                let html = `<div class="modal-header">
+                <h5 class="modal-title">Delete Skills</h5>
+            </div>
+            <div class="row h-25 justify-content-center">
+            <div id="modalloader" class="loading" style="display: none;">Please Wait</div>
+            <table style="background-color: white;" class="table display table-striped">
+            <thead>
+                <tr>
+                    <th><label>Populate</label></th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><textarea class="form-control" id="massel2" style="height: 250px; border-radius: 10px;resize: none;"
+                                placeholder="Paste Skills Here. Must be in correct form.    Press [alt] + [0][9] to insert tab if needed. List must be consistent"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><button class="btn btn-sm btn-primary" id="masselbutt" onclick="massel('skillselect')">Select</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table style="background-color: white;" class="table display table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        <label>Pick a Skill or Skills</label>
+                    </th>
+                    <th id="proflable"><label>Select Proficency</label></th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+
+                        <td class="top">
+                            <select id="skillselect" class="selectpicker" multiple data-live-search="true"
+                                data-actions-box="true" onchange="$('#subbutt').prop('disabled',false),changed('skillselect')">
+
+                            </select>
+                        </td>
+                        <td>
+                            <select class="selectpicker" id="profselect">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3" selected>3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="recTable" style="background-color: white;" class="table display table-striped">
+                <thead>
+                    <tr>
+                        <th id="skillorname">Skill Name</th>
+                        <th id="proforbl">Prof.</th>
+
+                    </tr>
+                </thead>
+                <tbody id=skillRec2>
+
+                </tbody>
+            </table>
+            <input type="hidden" id="subfunc">
+            </div>`;
                 var sskills = sorthelp(data, ['skillName'], ['ASC']);
+                $('#addskillhtml').html(html);
 
-                let skillWindow = PopupCenter("./newskill", "SkillWindow", 1200, 500);
+                // let skillWindow = PopupCenter("./newskill", "SkillWindow", 1200, 500);
 
-                skillWindow.focus();
+                // skillWindow.focus();
 
-                skillWindow.onload = function () {
+                // skillWindow.onload = function () {
 
-                    skillWindow.$('#subfunc').attr('onclick', 'btndelete()');
-                    skillWindow.$('#profselect').selectpicker('destroy');
-                    skillWindow.$('#profselect').prop('hidden', true);
-                    skillWindow.$('#proflable').prop('hidden', true);
-                    //let html = `<div style="font-size:30px">Welcome!</div>`;
-                    //skillWindow.document.body.insertAdjacentHTML("afterbegin",html);
-                    skillWindow.$('#skillselect').empty()
-                    // debugger;
-                    for (var i = 0; i < sskills.length; i++) {
-                        skillWindow.$('#skillselect').append("<option value=\"" + sskills[i]['skillId'] + "\">" + sskills[i]['skillName'] + "</option>")
-                    }
+                $('#subfunc').attr('onclick', 'btndelete()');
+                $('#profselect').selectpicker('destroy');
+                $('#profselect').prop('hidden', true);
+                $('#proflable').prop('hidden', true);
+                //let html = `<div style="font-size:30px">Welcome!</div>`;
+                //skillWindow.document.body.insertAdjacentHTML("afterbegin",html);
+                $('#skillselect').empty()
+                // debugger;
+                for (var i = 0; i < sskills.length; i++) {
+                    $('#skillselect').append("<option value=\"" + sskills[i]['skillId'] + "\">" + sskills[i]['skillName'] + "</option>")
                 }
+                $('#skillselect').selectpicker('refresh');
+                $('#skillrecmodal').modal('hide');
+                $('#addskillmodal').modal('show');
+                // }
 
             },
             error: function (message) {
                 console.log(message);
+                alert("Error is someone 'SELECTED'? ")
                 $('#loader').prop('style', 'display:none');
+                $('#modalloader').prop('style', 'display:none');
             },
+            complete: function () {
+
+            }
 
         });
     } else {
-        aid = $("#agents").val();
+        // aid = $("#agents").val();
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -548,17 +788,28 @@ function btndelete(id = null) {
             success: function (data) {
                 console.log(data);
                 if (Array.isArray(id)) {
-                    window.opener.load();
-                    window.close();
+                    if(!$('#addskillmodal').is(":visible")){
+                        load();
+                    }
+                    $('#addskillmodal').modal('hide');
+                    // load();
+                    // window.close();
                 }
                 else {
-                    load();
+                    if(!$('#addskillmodal').is(":visible")){
+                        load();
+                    }
+                    $('#addskillmodal').modal('hide');
+
+                    // load();
                     // $('#loader').prop('style', 'display:none');
                 }
             },
             error: function (message) {
                 console.log(message);
+                alert("Error is something 'SELECTED'? ")
                 $('#loader').prop('style', 'display:none');
+                $('#modalloader').prop('style', 'display:none');
             },
 
         });

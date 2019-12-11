@@ -19,7 +19,7 @@
         <a class="navbar-brand" href="./">Home</a>
       </nav>
 </head>
-<body>
+<body id="mainbody">
     @section('sidebar')
     @show
     <div id="loader" class="loading" style="display: none;">Please Wait</div>

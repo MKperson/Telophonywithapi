@@ -134,51 +134,56 @@ function massel(id) {
         $('#' + id).selectpicker('refresh');
         if (id == 'skillselect') {
             $('#subbutt').prop('disabled', false);
-            if (ids.length == skillidprof.length) {
+            if (skillidprof.length != 0) {
 
                 $('#' + skillrec).empty();
+                updateprof(skillidprof);
 
                 for (i = 0; i < names.length; i++) {
-                    let split = names[i].split('\t')
-                    $('#' + skillrec).append("<tr><td>" + split[0] + "</td><td>" + split[1] + "</td><td></td></tr>");
+                    let split = names[i].split('\t');
+                    if (split[1] != null) {
+                        $('#' + skillrec).append("<tr><td>" + split[0] + "</td><td>" + split[1] + "</td><td></td></tr>");
+                    }
+                    else {
+                        $('#' + skillrec).append("<tr><td>" + split[0] + "</td><td><select id=\"" + ids[i] + "S\" class=\"form-control\" readonly onchange=\"updateprof(" + ids[i] + ",'S')\">\
+                            <option value=\"1\">1</option>\
+                            <option value=\"2\">2</option>\
+                            <option value=\"3\" selected>3</option>\
+                            <option value=\"4\">4</option>\
+                            <option value=\"5\">5</option>\
+                            </select></td><td></td></tr>");
+                        // $('#' + ids[i]+'S').selectpicker('refresh');
+                        updateprof(ids[i], 'S');
+                    }
                 }
                 $('#' + skillrec).append("<tr><td><button class=\"btn btn-sm btn-primary\" id='subbutt' onclick=\"$('#subfunc').click()\">Submit</button></td><td></td><td></td></tr>");
 
                 $('#profselect').selectpicker('destroy');
                 $('#profselect').prop('hidden', true);
                 $('#proflable').prop('hidden', true);
-                $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
+            } else if (ids.length == skillidprof.length) {
 
-                    url: "setskillprofs",
-                    data: {
-                        skillidprof: skillidprof,
-                    },
-                    method: "post",
+                updateprof(skillidprof);
 
-                    success: function (data) {
-                        console.log(data);
-                    },
-                    error: function (message) {
-                        alert("ERROR");
-                        console.log(message)
-                    },
-                    complete: function () {
-                        $('#reop').prop('hidden', false);
-
-
-                    },
-                });
             }
             else {
                 if (skillidprof != 0) {
                     alert("Data must be consistent to set individual proficiency per skill\n(Note: If you are REMOVING skills you do not need proficiencys)")
-                    changed(id);
+                    // changed(id);
+                    // $('#profselect').prop('hidden', false);
+                    // $('#profselect').selectpicker('refresh');
+                    // $('#proflable').prop('hidden', false);
+                    // $.ajax({
+                    //     url: 'forgetskillprof',
+                    //     method: 'get',
+                    //     success: function () { },
+                    //     error: function () { },
+                    //     complete: function () { }
+                    // });
+                } else {
                     $('#profselect').prop('hidden', false);
                     $('#profselect').selectpicker('refresh');
-                    $('#proflable').prop('hidden', true);
+                    $('#proflable').prop('hidden', false);
                     $.ajax({
                         url: 'forgetskillprof',
                         method: 'get',
@@ -186,7 +191,7 @@ function massel(id) {
                         error: function () { },
                         complete: function () { }
                     });
-                } else {
+                   
                     $('#' + skillrec).empty();
                     for (i = 0; i < names.length; i++) {
                         //let split = names[i].split('\t')
@@ -206,6 +211,39 @@ function massel(id) {
 
 
 }
+function updateprof(id, S = null) {
+
+    if (!Array.isArray(id)) {
+        let val = $('#' + id + S + " option:selected").val();
+        id = id + "--" + val;
+    }
+
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+
+        url: "setskillprofs",
+        data: {
+            skillidprof: id,
+        },
+        method: "post",
+
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (message) {
+            alert("ERROR");
+            console.log(message)
+        },
+        complete: function () {
+            $('#reop').prop('hidden', false);
+
+
+        },
+    });
+}
+
 function popagents() {
     $('#loader').prop('style', 'display:block');
     $('#modalloader').prop('style', 'display:block');
@@ -330,14 +368,14 @@ function load() {
         });
     } else {
         //$('#radiobutt').prop('hidden', true);
-        $('#skillRec').empty();
+        // $('#skillRec').empty();
         $('#loader').prop('style', 'display:none');
         $('#modalloader').prop('style', 'display:none');
         $('#modalloader2').prop('style', 'display:none');
 
-        if (Array.isArray(val)) {
-            $('#skillRec').append("<tr><td>Updated " + val.length + " Agent/s </td><td></td><td></td></tr>");
-        }
+        // if (Array.isArray(val)) {
+        //     $('#skillRec').append("<tr><td>" + val.length + " Agent/s Selected and/or Modified</td><td></td><td></td></tr>");
+        // }
     }
 }
 
@@ -488,6 +526,18 @@ function addSkill() {
                 //skillWindow.focus();
 
                 $('#addskillhtml').html(html);
+                $('#massel2').on("change", function () {
+                    $('#massel2').val($('#massel2').val().trim());
+                    let arr = $('#massel2').val().split("\n");
+                    let str = "";
+                    for (let i = 0; i < arr.length; i++) {
+                        if (arr[i].trim() != "") {
+                            str += arr[i].trim() + "\n"
+                        }
+                    }
+                    $('#massel2').val(str);
+                    $('#massel2').val($('#massel2').val().trim());
+                });
 
                 // skillWindow.onload = function () {
                 // skillWindow.
@@ -544,7 +594,9 @@ function addSkill() {
                 },
                 // dataType: "json",
                 success: function (data) {
-                    //alert(data);
+                    if (Array.isArray(agentid)) {
+                        alert(agentid.length + " Agent/s Modified");
+                    }
                     $('#addskillmodal').modal('hide');
                     // load();
                     // window.close();
@@ -738,6 +790,18 @@ function btndelete(id = null) {
             </div>`;
                 var sskills = sorthelp(data, ['skillName'], ['ASC']);
                 $('#addskillhtml').html(html);
+                $('#massel2').on("change", function () {
+                    $('#massel2').val($('#massel2').val().trim());
+                    let arr = $('#massel2').val().split("\n");
+                    let str = "";
+                    for (let i = 0; i < arr.length; i++) {
+                        if (arr[i].trim() != "") {
+                            str += arr[i].trim() + "\n"
+                        }
+                    }
+                    $('#massel2').val(str);
+                    $('#massel2').val($('#massel2').val().trim());
+                });
 
                 // let skillWindow = PopupCenter("./newskill", "SkillWindow", 1200, 500);
 
@@ -788,15 +852,18 @@ function btndelete(id = null) {
             success: function (data) {
                 console.log(data);
                 if (Array.isArray(id)) {
-                    if(!$('#addskillmodal').is(":visible")){
+                    if (!$('#addskillmodal').is(":visible")) {
                         load();
+                    }
+                    if (Array.isArray(aid)) {
+                        alert(aid.length + " Agent/s Modified");
                     }
                     $('#addskillmodal').modal('hide');
                     // load();
                     // window.close();
                 }
                 else {
-                    if(!$('#addskillmodal').is(":visible")){
+                    if (!$('#addskillmodal').is(":visible")) {
                         load();
                     }
                     $('#addskillmodal').modal('hide');

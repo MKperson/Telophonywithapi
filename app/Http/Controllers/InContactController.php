@@ -246,9 +246,35 @@ class InContactController extends Controller
     }
     function setSkillProfs(Request $request)
     {
-        session()->forget('skillidprof');
-        session(['skillidprof' => $request['skillidprof']]);
-        
+        if (is_array($request['skillidprof'])) {
+            var_dump(session('skillidprof'));
+            var_dump($request['skillidprof']);
+
+            session()->forget('skillidprof');
+            session(['skillidprof' => $request['skillidprof']]);
+        }
+        else{
+            $rid = explode('--',$request['skillidprof']);
+            var_dump($rid);
+            $found = false;
+            $arr = session('skillidprof');
+            foreach($arr as $key=>$ids){
+                var_dump(array('var1'=>$arr));
+                $resultarr = explode('--', $ids);
+                if($resultarr[0] == $rid[0]){
+                    $arr[$key] = $resultarr[0] ."--". $rid[1];
+                    $found = true;
+                }
+                var_dump(array('var2'=>$arr));
+            }
+            if(!$found){
+            array_push($arr,$request['skillidprof']);
+            }
+
+            var_dump(array('arrcomplete'=>$arr));
+            session(['skillidprof' => $arr]);
+        }
+
     }
     function getSkills(Request $request)
     {

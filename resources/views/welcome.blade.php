@@ -83,7 +83,7 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    TelePhony Manager
+                    Telephony Manager
                 </div>
 
                 <div class="links">

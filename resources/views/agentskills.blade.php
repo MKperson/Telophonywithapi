@@ -12,7 +12,7 @@
     <table class="table-bordered" style="width: 25%;">
         <tbody>
             <tr style="height: 19px;">
-                <td class="col-form-label" style="width: 100%; height: 19px;">Please Choose an employee</td>
+                <td class="col-form-label" style="width: 100%; height: 19px;">Please Choose an Employee</td>
             </tr>
             <tr style="height: 19px;">
                 <td style="width: 100%; height: 19px;"><select class="form-control" data-live-search="true"
@@ -28,12 +28,14 @@
                     <input name="select" type="radio" id="select-2" value="2" onchange="toggle()" />Bulk </td>
             </tr>
             <tr>
-                <td><textarea class="form-control" id="massel" style="width: 100%; height: 250px;border-radius: 10px;resize: none; " hidden
+                <td><textarea class="form-control" id="massel"
+                        style="width: 100%; height: 250px;border-radius: 10px;resize: none; " hidden
                         placeholder="Paste Names Here. Must be in form &quot;Last, First&quot; please note that the space after the COMMA is REQUIRED"></textarea>
                 </td>
             </tr>
             <tr>
-                <td><button class="btn btn-sm btn-primary" id="masselbutt" hidden onclick="massel('agents')">Select</button></td>
+                <td><button class="btn btn-sm btn-primary" id="masselbutt" hidden
+                        onclick="massel('agents')">Select</button></td>
             </tr>
         </tbody>
     </table>
@@ -43,7 +45,7 @@
         aria-labelledby="myLargeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                    <div id="modalloader2" class="loading" style="display: none;">Please Wait</div>
+                <div id="modalloader2" class="loading" style="display: none;">Please Wait</div>
                 <div class="modal-header">
                     <h5 class="modal-title">Skills</h5>
                     {{-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -117,18 +119,42 @@
 @endsection
 @section('footer')
 <script type="text/javascript" src="..\resources\js\agentskill.js"></script>
-<script>
-    $(document).ready(function(){
-    $('#addskillmodal').on('hidden.bs.modal', function () {
-        // Load up a new modal...
-        $('#skillrecmodal').modal('show');
-        load();
-        $('#skillselect').remove();
-    })
-    $('#skillselect').remove();
-    popagents();
-})
+<script type="text/javascript">
+        $(document).ready(function(){
+            $('#addskillmodal').on('hidden.bs.modal', function () {
+                $.ajax({
+                    url: 'forgetskillprof',
+                    method: 'get',
+                    success: function () { },
+                    error: function () { },
+                    complete: function () { }
+                });
+                    // Load up a new modal...
+                $('#skillrecmodal').modal('show');
+                if ($('#skillselect')!=null){
+                    load();
+                    $('#skillselect').remove();
+                }else{
+                    alert("alert")
+                }
+            })
+            $('#skillselect').remove();
 
+            popagents();
+
+            $('#massel').on("change",function () {
+                $('#massel').val($('#massel').val().trim());
+                let arr = $('#massel').val().split("\n");
+                let str = "";
+                for(let i=0; i < arr.length; i++){
+                    if(arr[i].trim() !="" ){
+                        str +=arr[i].trim() + "\n"
+                    }
+                }
+                $('#massel').val(str);
+                $('#massel').val($('#massel').val().trim());
+            });
+        });
 </script>
 {{-- <iframe onload="" hidden></iframe> --}}
 @endsection

@@ -125,9 +125,9 @@
                 $.ajax({
                     url: 'forgetskillprof',
                     method: 'get',
-                    success: function () { },
-                    error: function () { },
-                    complete: function () { }
+                    success: function () {},
+                    error: function () {},
+                    complete: function () {}
                 });
                     // Load up a new modal...
                 $('#skillrecmodal').modal('show');

@@ -94,7 +94,6 @@ function massel(id) {
             var test = names[i].split('\t')
 
             if (test.length == 2) {
-
                 if (!test[0] == "" && !test[0] == " " && !test[1] == "" && !test[1] == " ") {
                     var v = $("#" + id + " option:contains(" + test[0] + ")").val();
                     if (v != null) {
@@ -191,7 +190,7 @@ function massel(id) {
                         error: function () { },
                         complete: function () { }
                     });
-                   
+
                     $('#' + skillrec).empty();
                     for (i = 0; i < names.length; i++) {
                         //let split = names[i].split('\t')

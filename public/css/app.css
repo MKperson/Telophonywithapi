@@ -54,11 +54,14 @@ table.center {
 .m-b-md {
     margin-bottom: 30px;
 }
-
+nav{
+    position: fixed;
+    z-index: 999;
+}
 /* Absolute Center Spinner */
 .loading {
     position: fixed;
-    z-index: 999;
+    z-index: 998;
     height: 2em;
     width: 2em;
     overflow: visible;

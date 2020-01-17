@@ -882,4 +882,16 @@ function btndelete(id = null) {
         //alert("delete: " + id);
     }
 }
+// function loopallagentskills() {
+//     $.ajax({
+//         headers: {
+//             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+//         },
+//         url: "loopallagentskills",
+
+//         method: "get",
+//         success: function () { }
+//     });
+
+// }
 

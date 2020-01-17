@@ -40,6 +40,8 @@ Route::get('forgetskillprof', function () {
     session()->forget('skillidprof');
 });
 
+// Route::get('loopallagentskills', 'InContactController@loopallagentskills');
+
 Route::match(['get', 'post'], 'addskill', 'InContactController@addSkill');
 
 Route::match(['get', 'post'], 'delskill', 'InContactController@delSkill');

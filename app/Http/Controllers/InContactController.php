@@ -126,6 +126,98 @@ class InContactController extends Controller
         $skills = json_decode($this->curlcalls($url, "get"))->GetAgentSkillsResult->Skills;
         return json_encode($skills);
     }
+    public function loopallagentskills(){
+        $csvarr=[["Account Name","Agent Name","Extension","Agent Availability Type",
+        "Default Phone","AutoAnswer Interaction","Default load allowance",
+        "Profiles","Available Load Allowances","Private Telephones","HPBX User",
+        "Hang Up Line After each call","Email Address","Always recorded",
+        "Change Extension","CRM","Delegate to Supervisor","Skills",
+        "Chat Private Greeting","Voice Mail","Password","Agent In Business Processes",
+        "Supervisor Of Business Processes"]];
+
+        //$Account_Name = ""; //ECS\TMS.FirstLast
+        //$Agent_Name = ""; //First Last
+        $Extension = "";
+        $Agent_Availability_Type = "RegularAgent";
+        $Default_Phone = "InternalPhone";
+        $AutoAnswer_Interaction = "TRUE";
+        $Default_load_allowance = "Basic";
+        $Profiles = "Agent Profile 1";
+        $Available_Load_Allowances = "Basic";
+        $Private_Telephones = "";
+        $HPBX_User = "";
+        $Hang_Up_Line_After_each_call = "InternalPhone";
+        $Email_Address = "client_support@tmscallcenters.com";
+        $Always_recorded = "TRUE";
+        $Change_Extension = "FALSE";
+        $CRM = "DISABLED";
+        $Delegate_to_Supervisor = "FALSE";
+        //$Skills = "";//Piyo|Low;Tai Cheng|High;3 Week Yoga Retreat|Low
+        $Chat_Private_Greeting = "";
+        $Voice_Mail = "";
+        $Password = "Password!1";
+        $Agent_In_Business_Processes = "";
+        $Supervisor_Of_Business_Processes = "";
+
+        $agenturl = 'https://www.tmsliveonline.com/DataService/DataService.svc/GetICAgents';
+
+        $agents = json_decode($this->curlcalls($agenturl, "get"))->GetICAgentsResult->agents;
+        foreach ($agents as $agent){
+            $Account_Name = "ECS\TMS.".$agent->firstName .$agent->lastName;
+            $Agent_Name = $agent->firstName." ".$agent->lastName;
+
+            $skillurl = 'https://www.tmsliveonline.com/DataService/DataService.svc/GetAgentSkills?AgentID=' . $agent->agentId;
+            $icskills = json_decode($this->curlcalls($skillurl, "get"))->GetAgentSkillsResult->Skills;
+            $Skills = "";//Piyo|Low;Tai Cheng|High;3 Week Yoga Retreat|Low
+            foreach($icskills as $skill){
+                if(strpos($skill->SkillName,"Reject") !== false ||strpos($skill->SkillName,"Out") !== False){
+                break;
+                }
+                Switch($skill->Proficiency){
+                    case "1":
+                    $prof = "High";
+                    break;
+                    case "2"||"3"||"4":
+                    $prof = "Medium";
+                    break;
+                    default:
+                    $prof = "Low";
+                }
+                $Skills .= $skill->SkillName."|".$prof.";";
+            }
+            array_push($csvarr,[$Account_Name,
+                $Agent_Name,
+                $Extension,
+                $Agent_Availability_Type,
+                $Default_Phone,
+                $AutoAnswer_Interaction,
+                $Default_load_allowance ,
+                $Profiles,
+                $Available_Load_Allowances,
+                $Private_Telephones,
+                $HPBX_User,
+                $Hang_Up_Line_After_each_call,
+                $Email_Address,
+                $Always_recorded,
+                $Change_Extension,
+                $CRM,
+                $Delegate_to_Supervisor,
+                $Skills,
+                $Chat_Private_Greeting,
+                $Voice_Mail,
+                $Password,
+                $Agent_In_Business_Processes,
+                $Supervisor_Of_Business_Processes]);
+        }
+        $file = fopen("../storage/app/AgentSkills.csv", "w");
+        foreach ($csvarr as $line) {
+            fputcsv($file, $line);
+        }
+        fclose($file);
+
+
+
+    }
     public function addSkill(Request $request)
     {
         if ($request->isMethod('post')) {

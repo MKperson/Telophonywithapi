@@ -1,7 +1,9 @@
-<!DOCTYPE html>
 @extends('layouts.app');
+@section("Title","Telephony Manager")
+@parent
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
+
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -63,6 +65,7 @@
                 margin-bottom: 30px;
             }
         </style>
+        
     </head>
     <body>
 

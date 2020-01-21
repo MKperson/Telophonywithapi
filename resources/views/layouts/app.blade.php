@@ -1,9 +1,6 @@
-<?php
-//session_start();
-//$_SESSION['result'];
-?>
 <html>
 <head>
+    <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.png') }}"/>
     <title>Telophony - @yield('title')</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,12 +9,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.12/dist/css/bootstrap-select.min.css">
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.min.css"> -->
     <!-- As a heading -->
     <nav class="navbar navbar-light bg-light">
         <a class="navbar-brand" href="./">Home</a>
       </nav>
+
 </head>
 <body id="mainbody">
     @section('sidebar')

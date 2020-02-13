@@ -13,9 +13,7 @@
 
 use App\Http\Controllers\InContactController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/',  'InContactController@Index');
 
 // Route::view('/welcome', 'welcome');
 
@@ -23,13 +21,17 @@ Route::get('/', function () {
 
 Route::get('agentskills', 'InContactController@agentskills');
 
-// Route::get('ajaxRequest', 'InContactController@ajaxRequest');
+Route::get('poll', 'InContactController@Poll');
 
 Route::post('getAgentSkills', 'InContactController@getAgentSkills');
 
 //Route::post('setAgents', 'InContactController@setAgents');
 
 Route::get('updateDB', 'InContactController@updateDB');
+
+Route::get('getallskills', 'InContactController@getallskills');
+
+Route::post('getAgentsbySkill', 'InContactController@getAgentsbySkill');
 
 Route::post('setAgentsProf', 'InContactController@setAgentsProf');
 
@@ -40,7 +42,7 @@ Route::get('forgetskillprof', function () {
     session()->forget('skillidprof');
 });
 
-// Route::get('loopallagentskills', 'InContactController@loopallagentskills');
+ Route::get('loopallagentskills', 'InContactController@loopallagentskills');
 
 Route::match(['get', 'post'], 'addskill', 'InContactController@addSkill');
 

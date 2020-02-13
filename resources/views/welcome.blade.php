@@ -1,8 +1,9 @@
-@extends('layouts.app');
-@section("Title","Telephony Manager")
-@parent
+
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
+        <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+        <link rel ="icon" href="{{ asset('favicon.png') }}">
 
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,7 +14,7 @@
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
 
         <!-- Styles -->
-        <style>
+        {{-- <style>
             html, body {
                 background-color: #fff;
                 color: #636b6f;
@@ -64,8 +65,8 @@
             .m-b-md {
                 margin-bottom: 30px;
             }
-        </style>
-        
+        </style> --}}
+
     </head>
     <body>
 
@@ -85,7 +86,7 @@
             @endif
 
             <div class="content">
-                <div class="title m-b-md">
+                <div class="title m-b-md"  >
                     Telephony Manager
                 </div>
 
@@ -105,4 +106,5 @@
         </div>
         <script src="{{ asset('js/testfile.js') }}"></script>
     </body>
+
 </html>

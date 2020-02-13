@@ -10,8 +10,10 @@ use ErrorException;
 use Facade\FlareClient\Http\Response;
 
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Stmt\Break_;
 use Symfony\Component\HttpFoundation\Session\Session;
 
+use function Psy\debug;
 
 class InContactController extends Controller
 {
@@ -21,7 +23,14 @@ class InContactController extends Controller
      * @param  Request  $request
      * @return Response
      */
-
+    public function Index()
+    {
+        return view('welcome');
+    }
+    public function poll()
+    {
+        return view('poll');
+    }
     public function agentskills()
     {
         $message = 'Please Wait';
@@ -97,6 +106,25 @@ class InContactController extends Controller
             return "ERROR";
         }
     }
+    public function getallskills()
+    {
+        if (session('skills') != null) {
+            return json_encode(session('skills'));
+        } else {
+            $skillurl = 'https://www.tmsliveonline.com/DataService/DataService.svc/GetICSkills';
+            $skills = json_decode($this->curlcalls($skillurl, "get"))->GetICSkillsResult->skills;
+            return json_encode($skills);
+        }
+    }
+    public function getAgentsbySkill(request $request)
+    {
+        $skillID = $request['skillid'];
+        $url = 'https://www.tmsliveonline.com/DataService/DataService.svc/GetSingleSkillAssignments?SkillID=' . $skillID;
+        $skill = json_decode($this->curlcalls($url, "get"))->GetSingleSkillAssignmentsResult->Assignments->Skills;
+
+        // return json_encode($url);
+        return json_encode($skill);
+    }
     public function updateDB(Request $request)
     {
         //$url = "https://www.tmsliveonline.com/DataService/DataService.svc/GetSkillAssignments";
@@ -126,14 +154,29 @@ class InContactController extends Controller
         $skills = json_decode($this->curlcalls($url, "get"))->GetAgentSkillsResult->Skills;
         return json_encode($skills);
     }
-    public function loopallagentskills(){
-        $csvarr=[["Account Name","Agent Name","Extension","Agent Availability Type",
-        "Default Phone","AutoAnswer Interaction","Default load allowance",
-        "Profiles","Available Load Allowances","Private Telephones","HPBX User",
-        "Hang Up Line After each call","Email Address","Always recorded",
-        "Change Extension","CRM","Delegate to Supervisor","Skills",
-        "Chat Private Greeting","Voice Mail","Password","Agent In Business Processes",
-        "Supervisor Of Business Processes"]];
+    public function loopallagentskills()
+    {
+        $namelist = [];
+        $icagentlist = fopen("../storage/app/CurrentAgents.csv", "r");
+        while (($data = fgetcsv($icagentlist)) !== False) {
+            array_push($namelist, $data[2] . ' ' . $data[3]);
+        }
+
+        //return $namelist;
+
+
+
+
+        $csvarr = [[
+            "Account Name", "Agent Name", "Extension", "Agent Availability Type",
+            "Default Phone", "AutoAnswer Interaction", "Default load allowance",
+            "Profiles", "Available Load Allowances", "Private Telephones", "HPBX User",
+            "Hang Up Line After each call", "Email Address", "Always recorded",
+            "Change Extension", "CRM", "Delegate to Supervisor", "Skills",
+            "Chat Private Greeting", "Voice Mail", "Password", "Agent In Business Processes",
+            "Supervisor Of Business Processes"
+        ]];
+
 
         //$Account_Name = ""; //ECS\TMS.FirstLast
         //$Agent_Name = ""; //First Last
@@ -148,9 +191,9 @@ class InContactController extends Controller
         $HPBX_User = "";
         $Hang_Up_Line_After_each_call = "InternalPhone";
         $Email_Address = "client_support@tmscallcenters.com";
-        $Always_recorded = "TRUE";
+        $Always_recorded = "Yes";
         $Change_Extension = "FALSE";
-        $CRM = "DISABLED";
+        $CRM = "Disabled";
         $Delegate_to_Supervisor = "FALSE";
         //$Skills = "";//Piyo|Low;Tai Cheng|High;3 Week Yoga Retreat|Low
         $Chat_Private_Greeting = "";
@@ -161,37 +204,73 @@ class InContactController extends Controller
 
         $agenturl = 'https://www.tmsliveonline.com/DataService/DataService.svc/GetICAgents';
 
+
         $agents = json_decode($this->curlcalls($agenturl, "get"))->GetICAgentsResult->agents;
-        foreach ($agents as $agent){
-            $Account_Name = "ECS\TMS.".$agent->firstName .$agent->lastName;
-            $Agent_Name = $agent->firstName." ".$agent->lastName;
+        foreach ($agents as $agent) {
+
+            $Account_Name = str_replace(' ', '', "ECS\TMS." . $agent->firstName . $agent->lastName);
+            $Account_Name = str_replace('-', '', $Account_Name);
+            $Agent_Name = $agent->firstName . " " . $agent->lastName;
+            $inlist = false;
+            foreach ($namelist as $name) {
+
+                if ($Agent_Name == $name) {
+                    $inlist = true;
+                    if (strpos($Agent_Name, "Plexaderm") !== false || strpos($Agent_Name, "PlexaDerm") !== false) {
+                        $Account_Name = str_replace(' ', '', "ECS\TMS." . $agent->lastName . "Plex");
+                        $Account_Name = str_replace('-', '', $Account_Name);
+                        $Agent_Name = $agent->lastName . " Plex";
+                    break;
+                    } elseif (strpos($Agent_Name, "Tempur Sealy") !== false) {
+                        $Account_Name = str_replace(' ', '', "ECS\TMS." . $agent->firstName . "Tempur");
+                        $Account_Name = str_replace('-', '', $Account_Name);
+                        $Agent_Name = $agent->firstName . " Tempur";
+                    break;
+                    } elseif (strpos($Agent_Name, "NAC CS") !== false) {
+                        $Account_Name = str_replace(' ', '', "ECS\TMS." . $agent->lastName . "NAC");
+                        $Account_Name = str_replace('-', '', $Account_Name);
+                        $Agent_Name = $agent->lastName . " NAC";
+                    break;
+                    }
+                    else{
+                        //return $Agent_Name . "," . $name;
+                    break;
+                    }
+
+                }
+            }
+            if ($inlist == false) {
+                //return $Agent_Name . "," . $name.",".$count;
+                continue;
+            }
 
             $skillurl = 'https://www.tmsliveonline.com/DataService/DataService.svc/GetAgentSkills?AgentID=' . $agent->agentId;
             $icskills = json_decode($this->curlcalls($skillurl, "get"))->GetAgentSkillsResult->Skills;
-            $Skills = "";//Piyo|Low;Tai Cheng|High;3 Week Yoga Retreat|Low
-            foreach($icskills as $skill){
-                if(strpos($skill->SkillName,"Reject") !== false ||strpos($skill->SkillName,"Out") !== False){
-                break;
+            $Skills = ""; //Piyo|Low;Tai Cheng|High;3 Week Yoga Retreat|Low
+            foreach ($icskills as $skill) {
+                if (strpos($skill->SkillName, "Reject") !== false || strpos($skill->SkillName, "Out") !== False) {
+                    continue;
                 }
-                Switch($skill->Proficiency){
+                switch ($skill->Proficiency) {
                     case "1":
-                    $prof = "High";
-                    break;
-                    case "2"||"3"||"4":
-                    $prof = "Medium";
-                    break;
+                        $prof = "High";
+                        break;
+                    case "2" || "3" || "4":
+                        $prof = "Medium";
+                        break;
                     default:
-                    $prof = "Low";
+                        $prof = "Low";
                 }
-                $Skills .= $skill->SkillName."|".$prof.";";
+                $Skills .= $skill->SkillName . "|" . $prof . ";";
             }
-            array_push($csvarr,[$Account_Name,
+            array_push($csvarr, [
+                $Account_Name,
                 $Agent_Name,
                 $Extension,
                 $Agent_Availability_Type,
                 $Default_Phone,
                 $AutoAnswer_Interaction,
-                $Default_load_allowance ,
+                $Default_load_allowance,
                 $Profiles,
                 $Available_Load_Allowances,
                 $Private_Telephones,
@@ -207,16 +286,14 @@ class InContactController extends Controller
                 $Voice_Mail,
                 $Password,
                 $Agent_In_Business_Processes,
-                $Supervisor_Of_Business_Processes]);
+                $Supervisor_Of_Business_Processes
+            ]);
         }
         $file = fopen("../storage/app/AgentSkills.csv", "w");
         foreach ($csvarr as $line) {
             fputcsv($file, $line);
         }
         fclose($file);
-
-
-
     }
     public function addSkill(Request $request)
     {
@@ -344,29 +421,27 @@ class InContactController extends Controller
 
             session()->forget('skillidprof');
             session(['skillidprof' => $request['skillidprof']]);
-        }
-        else{
-            $rid = explode('--',$request['skillidprof']);
+        } else {
+            $rid = explode('--', $request['skillidprof']);
             var_dump($rid);
             $found = false;
             $arr = session('skillidprof');
-            foreach($arr as $key=>$ids){
-                var_dump(array('var1'=>$arr));
+            foreach ($arr as $key => $ids) {
+                var_dump(array('var1' => $arr));
                 $resultarr = explode('--', $ids);
-                if($resultarr[0] == $rid[0]){
-                    $arr[$key] = $resultarr[0] ."--". $rid[1];
+                if ($resultarr[0] == $rid[0]) {
+                    $arr[$key] = $resultarr[0] . "--" . $rid[1];
                     $found = true;
                 }
-                var_dump(array('var2'=>$arr));
+                var_dump(array('var2' => $arr));
             }
-            if(!$found){
-            array_push($arr,$request['skillidprof']);
+            if (!$found) {
+                array_push($arr, $request['skillidprof']);
             }
 
-            var_dump(array('arrcomplete'=>$arr));
+            var_dump(array('arrcomplete' => $arr));
             session(['skillidprof' => $arr]);
         }
-
     }
     function getSkills(Request $request)
     {
